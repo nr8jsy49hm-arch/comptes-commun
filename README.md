@@ -1,6 +1,6 @@
-# Comptes Communs — Phase 0 : structure de départ
+# Comptes Communs
 
-Squelette du projet conforme au cahier des charges : backend FastAPI + PostgreSQL, frontend React.
+Squelette du projet conforme au cahier des charges : backend FastAPI + PostgreSQL, frontend React, avec authentification JWT.
 
 ## Structure
 
@@ -38,13 +38,23 @@ pip install -r requirements.txt
 
 # Créer un fichier .env avec :
 # DATABASE_URL=postgresql://user:password@localhost:5432/comptes_communs
+# SECRET_KEY=une-longue-chaine-aleatoire (génère-la avec `openssl rand -hex 32`)
 
 uvicorn app.main:app --reload
 ```
 
 L'API tourne sur `http://localhost:8000` (doc interactive auto sur `/docs`).
 
-**Important** : il faut avoir PostgreSQL installé et une base `comptes_communs` créée, et pour l'instant un foyer + deux utilisateurs insérés à la main en base (pas encore d'écran d'inscription — c'est la prochaine étape logique).
+**Important** : il faut avoir PostgreSQL installé et une base `comptes_communs` créée.
+
+## Authentification
+
+Le flux est le suivant :
+1. **Le premier des deux s'inscrit** (`Créer un nouveau foyer`) — ça crée à la fois son compte et le foyer.
+2. Une fois connecté, son **numéro de foyer** s'affiche en haut de l'écran (`Foyer n°X`).
+3. **Le/la partenaire s'inscrit à son tour** en choisissant `Rejoindre un foyer existant` et en renseignant ce numéro.
+
+Les deux comptes sont alors rattachés au même foyer, et toutes les dépenses/balances sont automatiquement partagées entre eux — plus besoin d'insérer quoi que ce soit à la main en base.
 
 ## Lancer le frontend
 
@@ -58,8 +68,17 @@ Le frontend tourne sur `http://localhost:5173` et appelle l'API sur `http://loca
 
 ## Ce qui manque encore (prochaines étapes)
 
-- Écran de création du foyer + des deux utilisateurs (actuellement `FOYER_ID = 1` en dur côté frontend).
-- Authentification (JWT) — les endpoints ne sont pas encore protégés.
-- Gestion des catégories (CRUD) côté API et frontend.
-- Écran de règlement (rembourser l'autre).
-- Migrations Alembic proprement configurées (pour l'instant les tables sont créées automatiquement au démarrage).
+- Gestion avancée des catégories (édition, suppression depuis le frontend — la suppression existe déjà côté API).
+- Clé de répartition personnalisable (actuellement 50/50 fixe).
+- Migrations Alembic proprement configurées (pour l'instant les tables sont créées automatiquement au démarrage, avec une mini-migration manuelle pour la colonne `partagee`).
+
+## Mode solo
+
+L'onglet Solo a maintenant la même richesse que les comptes communs : budget mensuel perso + reste à vivre, répartition par catégorie, et historique mois par mois / année par année — mais pas de règlement, puisque ça n'a pas de sens pour des dépenses qui n'engagent que soi.
+
+## Raffinements
+
+- Transition douce au changement d'onglet.
+- Icône automatique par catégorie (déduite du nom — courses, logement, transport, etc.), visible partout où les catégories apparaissent.
+- Mode sombre (bouton dans la barre latérale, suit la préférence du système par défaut, mémorisé ensuite).
+- Tableaux de dépenses triables (cliquer sur un en-tête de colonne) avec suppression, dans l'onglet Dépenses et dans le mode Solo.

@@ -4,18 +4,20 @@ from typing import List
 
 from .. import models, schemas
 from ..database import get_db
+from ..deps import get_current_user
 
 router = APIRouter(prefix="/repartition", tags=["repartition"])
 
 
-@router.get("/balance", response_model=List[schemas.BalanceResponse])
-def calculer_balance(foyer_id: int, db: Session = Depends(get_db)):
+def _calculer_balance(foyer_id: int, db: Session) -> List[schemas.BalanceResponse]:
     """
     Calcule qui doit combien à qui, en supposant une répartition 50/50 par défaut.
     (La logique de clé de répartition personnalisée sera branchée ici plus tard.)
     """
     utilisateurs = db.query(models.Utilisateur).filter(models.Utilisateur.foyer_id == foyer_id).all()
-    depenses = db.query(models.Depense).filter(models.Depense.foyer_id == foyer_id).all()
+    depenses = db.query(models.Depense).filter(
+        models.Depense.foyer_id == foyer_id, models.Depense.partagee == True
+    ).all()
     reglements = db.query(models.Reglement).filter(models.Reglement.foyer_id == foyer_id).all()
 
     if len(utilisateurs) != 2:
@@ -29,7 +31,6 @@ def calculer_balance(foyer_id: int, db: Session = Depends(get_db)):
     paye_par_u1 = sum(d.montant for d in depenses if d.payeur_id == u1.id)
     paye_par_u2 = sum(d.montant for d in depenses if d.payeur_id == u2.id)
 
-    # Ajustement des règlements déjà effectués
     for r in reglements:
         if r.de_utilisateur_id == u1.id:
             paye_par_u1 += r.montant
@@ -45,9 +46,34 @@ def calculer_balance(foyer_id: int, db: Session = Depends(get_db)):
     ]
 
 
+@router.get("/balance", response_model=List[schemas.BalanceResponse])
+def calculer_balance(
+    db: Session = Depends(get_db),
+    current_user: models.Utilisateur = Depends(get_current_user),
+):
+    return _calculer_balance(current_user.foyer_id, db)
+
+
+@router.get("/reglements", response_model=List[schemas.Reglement])
+def lister_reglements(
+    db: Session = Depends(get_db),
+    current_user: models.Utilisateur = Depends(get_current_user),
+):
+    return (
+        db.query(models.Reglement)
+        .filter(models.Reglement.foyer_id == current_user.foyer_id)
+        .order_by(models.Reglement.date.desc())
+        .all()
+    )
+
+
 @router.post("/reglements", response_model=schemas.Reglement)
-def creer_reglement(foyer_id: int, reglement: schemas.ReglementCreate, db: Session = Depends(get_db)):
-    db_reglement = models.Reglement(**reglement.model_dump(), foyer_id=foyer_id)
+def creer_reglement(
+    reglement: schemas.ReglementCreate,
+    db: Session = Depends(get_db),
+    current_user: models.Utilisateur = Depends(get_current_user),
+):
+    db_reglement = models.Reglement(**reglement.model_dump(), foyer_id=current_user.foyer_id)
     db.add(db_reglement)
     db.commit()
     db.refresh(db_reglement)

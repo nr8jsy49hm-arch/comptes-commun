@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .database import Base
@@ -46,6 +46,7 @@ class Depense(Base):
     montant = Column(Float, nullable=False)
     date = Column(Date, nullable=False)
     note = Column(String, nullable=True)
+    partagee = Column(Boolean, nullable=False, default=True, server_default="true")
 
     categorie_id = Column(Integer, ForeignKey("categories.id"))
     payeur_id = Column(Integer, ForeignKey("utilisateurs.id"))
@@ -81,3 +82,50 @@ class CleRepartition(Base):
     type = Column(String, nullable=False)  # "50_50", "proportionnelle", "personnalisee"
     valeur = Column(String, nullable=True)  # ex: JSON stringifié si personnalisée
     foyer_id = Column(Integer, ForeignKey("foyers.id"))
+
+
+class Budget(Base):
+    """Budget mensuel défini pour un foyer, mois par mois."""
+    __tablename__ = "budgets"
+
+    id = Column(Integer, primary_key=True, index=True)
+    mois = Column(Date, nullable=False)  # toujours stocké au 1er du mois concerné
+    montant = Column(Float, nullable=False)
+    foyer_id = Column(Integer, ForeignKey("foyers.id"))
+
+
+class BudgetPersonnel(Base):
+    """Budget mensuel personnel (mode solo), défini par utilisateur plutôt que par foyer."""
+    __tablename__ = "budgets_personnels"
+
+    id = Column(Integer, primary_key=True, index=True)
+    mois = Column(Date, nullable=False)
+    montant = Column(Float, nullable=False)
+    utilisateur_id = Column(Integer, ForeignKey("utilisateurs.id"))
+
+
+class Objectif(Base):
+    """Objectif d'épargne (vacances, apport maison, etc.), plusieurs possibles par foyer."""
+    __tablename__ = "objectifs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nom = Column(String, nullable=False)
+    montant_cible = Column(Float, nullable=False)
+    date_cible = Column(Date, nullable=True)
+    foyer_id = Column(Integer, ForeignKey("foyers.id"))
+
+    versements = relationship(
+        "VersementObjectif", back_populates="objectif", cascade="all, delete-orphan"
+    )
+
+
+class VersementObjectif(Base):
+    """Un versement vers un objectif d'épargne — le montant actuel est la somme des versements."""
+    __tablename__ = "versements_objectifs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    montant = Column(Float, nullable=False)
+    date = Column(Date, nullable=False)
+    objectif_id = Column(Integer, ForeignKey("objectifs.id"))
+
+    objectif = relationship("Objectif", back_populates="versements")
