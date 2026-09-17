@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getDepenses, getCategories, getMembresFoyer, supprimerDepense } from "../api";
+import { Download, Printer } from "lucide-react";
+import { getDepenses, getCategories, getMembresFoyer, supprimerDepense, exporterDepensesCsv } from "../api";
 import TableauDepenses from "./TableauDepenses";
 
 export default function ListeDepenses() {
@@ -29,7 +30,19 @@ export default function ListeDepenses() {
 
   return (
     <div className="dashboard liste-depenses">
-      <h3>Toutes les dépenses communes</h3>
+      <div className="liste-depenses-entete">
+        <h3>Toutes les dépenses communes</h3>
+        <div className="liste-depenses-export">
+          <button type="button" className="lien" onClick={exporterDepensesCsv}>
+            <Download size={14} strokeWidth={2} style={{ verticalAlign: -2, marginRight: 4 }} />
+            CSV
+          </button>
+          <button type="button" className="lien" onClick={() => window.print()}>
+            <Printer size={14} strokeWidth={2} style={{ verticalAlign: -2, marginRight: 4 }} />
+            Imprimer / PDF
+          </button>
+        </div>
+      </div>
       <TableauDepenses
         depenses={depenses}
         categoriesParId={categoriesParId}

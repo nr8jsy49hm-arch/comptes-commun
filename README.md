@@ -89,3 +89,16 @@ L'onglet Solo a maintenant la même richesse que les comptes communs : budget me
 - **Question secrète** : définissable à l'inscription ou depuis "Mon compte" — sert à la récupération de mot de passe sans email.
 - **Mot de passe oublié** : lien sur l'écran de connexion, demande l'email puis la réponse à la question secrète. Si aucune question n'a été définie pour ce compte, la récupération n'est pas possible par ce biais (il faut alors modifier directement la base, ou demander à son/sa partenaire).
 - **Supprimer son compte** : depuis "Mon compte", avec confirmation par mot de passe. Les dépenses et le budget personnels (mode solo) sont supprimés automatiquement ; si des dépenses ou règlements communs existent, la suppression est bloquée pour l'instant (pas de transfert de propriété implémenté).
+
+## Autres fonctionnalités
+
+- **Gestion des catégories** (onglet Dépenses) : renommer ou supprimer une catégorie directement depuis l'appli. La suppression est bloquée si des dépenses l'utilisent encore (message explicite plutôt qu'une erreur brute).
+- **Clé de répartition personnalisable** (onglet Dépenses) : un curseur permet de passer d'un partage 50/50 à n'importe quelle proportion entre les deux membres du foyer, avec un bouton pour revenir au 50/50 par défaut.
+- **Export des données** : bouton CSV (téléchargement direct) et bouton "Imprimer / PDF" (utilise la boîte de dialogue d'impression du navigateur, qui propose "Enregistrer en PDF") — disponibles dans l'onglet Dépenses (commun) et dans le mode Solo.
+
+## Prochaines pistes (discutées mais pas encore faites)
+
+- Notifications/rappels (budget dépassé, rappel de saisie).
+- Sécurité des données (durcissement au-delà de l'existant : JWT, bcrypt, HTTPS via Railway/Vercel).
+- Tests automatisés et migrations Alembic propres (remplaceraient la mini-migration manuelle actuelle).
+- Connexion bancaire automatique : nécessite un agrégateur tiers agréé (Bridge, Powens...), avec inscription développeur et éventuels frais — à cadrer séparément.

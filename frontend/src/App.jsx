@@ -4,6 +4,8 @@ import Dashboard from "./components/Dashboard";
 import DepenseForm from "./components/DepenseForm";
 import Reglement from "./components/Reglement";
 import ListeDepenses from "./components/ListeDepenses";
+import GestionCategories from "./components/GestionCategories";
+import CleRepartition from "./components/CleRepartition";
 import Historique from "./components/Historique";
 import Objectifs from "./components/Objectifs";
 import SoloDepenses from "./components/SoloDepenses";
@@ -142,6 +144,8 @@ export default function App() {
             <>
               <DepenseForm onDepenseCreee={() => setRefreshKey((k) => k + 1)} />
               <Reglement onReglementCree={() => setRefreshKey((k) => k + 1)} />
+              <CleRepartition key={refreshKey} />
+              <GestionCategories key={refreshKey} />
               <ListeDepenses key={refreshKey} />
             </>
           )}

@@ -64,12 +64,17 @@ export const getDepenses = () => api.get("/depenses/");
 export const creerDepense = (depense) => api.post("/depenses/", depense);
 export const supprimerDepense = (id) => api.delete(`/depenses/${id}`);
 export const getBalance = () => api.get("/repartition/balance");
+export const getCleRepartition = () => api.get("/repartition/cle");
+export const definirCleRepartition = (parts) => api.post("/repartition/cle", { parts });
+export const reinitialiserCleRepartition = () => api.delete("/repartition/cle");
 export const getReglements = () => api.get("/repartition/reglements");
 export const creerReglement = (reglement) => api.post("/repartition/reglements", reglement);
 
 // --- Catégories et membres du foyer ---
 export const getCategories = () => api.get("/categories/");
 export const creerCategorie = (categorie) => api.post("/categories/", categorie);
+export const renommerCategorie = (id, nom) => api.patch(`/categories/${id}`, { nom });
+export const supprimerCategorie = (id) => api.delete(`/categories/${id}`);
 export const getMembresFoyer = () => api.get("/foyer/membres");
 
 // --- Budget mensuel ---
@@ -97,5 +102,20 @@ export const getSoloAnneesDisponibles = () => api.get("/solo/historique/annees")
 export const getSoloHistoriqueAnnee = (annee) => api.get(`/solo/historique/${annee}`);
 export const getSoloHistoriqueMoisCategories = (annee, mois) =>
   api.get(`/solo/historique/${annee}/${mois}/categories`);
+
+// --- Export ---
+async function telechargerFichier(url, nomFichier) {
+  const res = await api.get(url, { responseType: "blob" });
+  const lien = document.createElement("a");
+  lien.href = window.URL.createObjectURL(res.data);
+  lien.download = nomFichier;
+  document.body.appendChild(lien);
+  lien.click();
+  lien.remove();
+}
+
+export const exporterDepensesCsv = () => telechargerFichier("/export/depenses.csv", "depenses-communes.csv");
+export const exporterDepensesSoloCsv = () =>
+  telechargerFichier("/solo/export/depenses.csv", "depenses-perso.csv");
 
 export default api;

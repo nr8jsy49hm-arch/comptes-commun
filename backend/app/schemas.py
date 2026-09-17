@@ -125,6 +125,15 @@ class BalanceResponse(BaseModel):
     solde: float  # positif = on lui doit de l'argent, négatif = il/elle doit de l'argent
 
 
+class CleRepartitionIn(BaseModel):
+    parts: dict[int, float]  # utilisateur_id -> pourcentage (doit sommer à 100)
+
+
+class CleRepartitionOut(BaseModel):
+    type: str  # "50_50" ou "personnalisee"
+    parts: dict[int, float]
+
+
 class BudgetBase(BaseModel):
     montant: float
     mois: Optional[date] = None  # si omis, s'applique au mois courant

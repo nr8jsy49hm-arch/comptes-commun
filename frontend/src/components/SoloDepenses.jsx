@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Download, Printer } from "lucide-react";
 import {
   getSoloDashboard,
   getCategories,
@@ -9,6 +10,7 @@ import {
   getSoloAnneesDisponibles,
   getSoloHistoriqueAnnee,
   getSoloHistoriqueMoisCategories,
+  exporterDepensesSoloCsv,
 } from "../api";
 import Historique from "./Historique";
 import TableauDepenses from "./TableauDepenses";
@@ -203,7 +205,19 @@ export default function SoloDepenses() {
 
         {data.depenses.length > 0 && (
           <>
-            <h3>Détail du mois</h3>
+            <div className="liste-depenses-entete">
+              <h3>Détail du mois</h3>
+              <div className="liste-depenses-export">
+                <button type="button" className="lien" onClick={exporterDepensesSoloCsv}>
+                  <Download size={14} strokeWidth={2} style={{ verticalAlign: -2, marginRight: 4 }} />
+                  CSV
+                </button>
+                <button type="button" className="lien" onClick={() => window.print()}>
+                  <Printer size={14} strokeWidth={2} style={{ verticalAlign: -2, marginRight: 4 }} />
+                  Imprimer / PDF
+                </button>
+              </div>
+            </div>
             <TableauDepenses
               depenses={data.depenses}
               categoriesParId={categoriesParId}

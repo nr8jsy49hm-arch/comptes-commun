@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from datetime import date
 from calendar import monthrange
 from typing import List
+import csv
+import io
 
 from .. import models, schemas
 from ..database import get_db
@@ -200,3 +203,35 @@ def historique_solo_mois_categories(
         nom_cat = d.categorie.nom if d.categorie else "Autre"
         par_categorie[nom_cat] = par_categorie.get(nom_cat, 0) + d.montant
     return {k: round(v, 2) for k, v in par_categorie.items()}
+
+
+# ---------- Export CSV ----------
+
+@router.get("/export/depenses.csv")
+def exporter_depenses_solo_csv(
+    db: Session = Depends(get_db),
+    current_user: models.Utilisateur = Depends(get_current_user),
+):
+    depenses = (
+        db.query(models.Depense)
+        .filter(models.Depense.payeur_id == current_user.id, models.Depense.partagee == False)
+        .order_by(models.Depense.date.desc())
+        .all()
+    )
+    categories = db.query(models.Categorie).filter(models.Categorie.foyer_id == current_user.foyer_id).all()
+    categories_par_id = {c.id: c.nom for c in categories}
+
+    buffer = io.StringIO()
+    writer = csv.writer(buffer, delimiter=";")
+    writer.writerow(["Date", "Catégorie", "Note", "Montant (€)"])
+    for d in depenses:
+        writer.writerow(
+            [d.date.isoformat(), categories_par_id.get(d.categorie_id, "Autre"), d.note or "", f"{d.montant:.2f}"]
+        )
+    buffer.seek(0)
+
+    return StreamingResponse(
+        buffer,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=depenses-perso.csv"},
+    )

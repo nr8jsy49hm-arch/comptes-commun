@@ -921,6 +921,24 @@ button:disabled {
   margin-top: 0;
 }
 
+.liste-depenses-entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.liste-depenses-entete h3 {
+  margin: 0;
+}
+
+.liste-depenses-export {
+  display: flex;
+  gap: 16px;
+}
+
 /* ---------- Mon compte ---------- */
 
 .compte-section {
@@ -957,6 +975,102 @@ button:disabled {
 
 .bouton-danger:hover:not(:disabled) {
   background: #7c3820;
+}
+
+/* ---------- Gestion des catégories ---------- */
+
+.gestion-categories ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.gestion-categories li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--color-line);
+}
+
+.gestion-categories li:last-child {
+  border-bottom: none;
+}
+
+.categorie-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.categorie-edition-input {
+  flex: 1;
+  padding: 5px 8px;
+  font-size: 0.9rem;
+  margin-right: 8px;
+}
+
+/* ---------- Clé de répartition ---------- */
+
+.cle-repartition-intro {
+  font-size: 0.85rem;
+  margin: 0 0 20px;
+}
+
+.cle-repartition-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.cle-repartition-curseur {
+  width: 100%;
+  height: 6px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--color-brass) 0%,
+    var(--color-brass) var(--valeur, 50%),
+    var(--color-line) var(--valeur, 50%),
+    var(--color-line) 100%
+  );
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.cle-repartition-curseur::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-brass-dark);
+  border: 2px solid var(--color-paper);
+  box-shadow: var(--shadow-raised);
+  cursor: pointer;
+}
+
+.cle-repartition-curseur::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-brass-dark);
+  border: 2px solid var(--color-paper);
+  box-shadow: var(--shadow-raised);
+  cursor: pointer;
+}
+
+.cle-repartition-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 /* ---------- Responsive ---------- */
@@ -1052,5 +1166,38 @@ button:disabled {
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
+  }
+}
+
+/* ---------- Impression / export PDF ---------- */
+
+@media print {
+  .sidebar,
+  .liste-depenses-export,
+  .depense-form,
+  .reglement,
+  .cle-repartition,
+  .gestion-categories,
+  .budget-bloc form,
+  .contenu-header,
+  .tableau-supprimer {
+    display: none !important;
+  }
+
+  .contenu {
+    padding: 0;
+  }
+
+  .dashboard,
+  .liste-depenses,
+  .solo {
+    box-shadow: none;
+    border: none;
+    max-width: 100%;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
   }
 }
