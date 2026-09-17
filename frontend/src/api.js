@@ -118,4 +118,7 @@ export const exporterDepensesCsv = () => telechargerFichier("/export/depenses.cs
 export const exporterDepensesSoloCsv = () =>
   telechargerFichier("/solo/export/depenses.csv", "depenses-perso.csv");
 
+// --- Alertes ---
+export const getAlertes = () => api.get("/alertes/");
+
 export default api;

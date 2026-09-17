@@ -13,6 +13,7 @@ import Compte from "./components/Compte";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import MotDePasseOublie from "./components/MotDePasseOublie";
+import NotificationsBanner from "./components/NotificationsBanner";
 
 function getUtilisateurStocke() {
   const raw = localStorage.getItem("utilisateur");
@@ -134,6 +135,8 @@ export default function App() {
         <header className="contenu-header">
           <h1>{ongletActif === "compte" ? "Mon compte" : ongletCourant?.label}</h1>
         </header>
+
+        <NotificationsBanner />
 
         <div className="contenu-page" key={ongletActif}>
           {ongletActif === "solo" && <SoloDepenses />}

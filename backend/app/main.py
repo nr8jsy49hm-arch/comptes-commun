@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 from .database import engine, Base
-from .routers import auth, depenses, repartition, dashboard, categories, foyer, budgets, historique, objectifs, solo, export
+from .routers import auth, depenses, repartition, dashboard, categories, foyer, budgets, historique, objectifs, solo, export, alertes
 
 # Crée les tables si elles n'existent pas (à remplacer par Alembic en prod)
 Base.metadata.create_all(bind=engine)
@@ -50,6 +50,7 @@ app.include_router(repartition.router)
 app.include_router(dashboard.router)
 app.include_router(solo.router)
 app.include_router(export.router)
+app.include_router(alertes.router)
 
 
 @app.get("/")

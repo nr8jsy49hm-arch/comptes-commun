@@ -98,7 +98,11 @@ L'onglet Solo a maintenant la même richesse que les comptes communs : budget me
 
 ## Prochaines pistes (discutées mais pas encore faites)
 
-- Notifications/rappels (budget dépassé, rappel de saisie).
 - Sécurité des données (durcissement au-delà de l'existant : JWT, bcrypt, HTTPS via Railway/Vercel).
 - Tests automatisés et migrations Alembic propres (remplaceraient la mini-migration manuelle actuelle).
 - Connexion bancaire automatique : nécessite un agrégateur tiers agréé (Bridge, Powens...), avec inscription développeur et éventuels frais — à cadrer séparément.
+
+## Notifications
+
+- **Bandeaux dans l'appli** : affichés en haut de chaque page si le budget (commun ou solo) est dépassé ce mois-ci, ou si aucune dépense commune n'a été enregistrée depuis 5 jours ou plus. Chaque bandeau peut être ignoré pour la journée (bouton ✕) ; il réapparaît le lendemain si la situation persiste.
+- **Notifications navigateur** (optionnelles) : activables depuis "Mon compte" — demande l'autorisation du navigateur, puis affiche une vraie notification système (même onglet en arrière-plan) une fois par jour et par type d'alerte, tant que l'appli est ouverte quelque part au moment où la vérification se fait (pas de vraie notification "push" quand l'appli est complètement fermée, ça demanderait un serveur dédié).

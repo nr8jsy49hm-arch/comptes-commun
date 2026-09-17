@@ -214,3 +214,9 @@ class SoloDashboardResponse(BaseModel):
     depenses: list[Depense]
     budget_mois: Optional[float] = None
     reste_a_vivre: Optional[float] = None
+
+
+class AlertesResponse(BaseModel):
+    depassement_budget_commun: Optional[float] = None
+    depassement_budget_solo: Optional[float] = None
+    jours_sans_depense_commune: Optional[int] = None

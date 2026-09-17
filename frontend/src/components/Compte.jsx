@@ -7,6 +7,33 @@ import {
 } from "../api";
 
 export default function Compte({ onCompteSupprime }) {
+  // Notifications navigateur
+  const [notifsActivees, setNotifsActivees] = useState(
+    localStorage.getItem("notifications_navigateur") === "true"
+  );
+  const [messageNotifs, setMessageNotifs] = useState("");
+
+  const handleToggleNotifs = async () => {
+    if (!notifsActivees) {
+      if (typeof Notification === "undefined") {
+        setMessageNotifs("Ton navigateur ne supporte pas les notifications.");
+        return;
+      }
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        setMessageNotifs("Autorisation refusée — active les notifications dans les réglages du navigateur.");
+        return;
+      }
+      localStorage.setItem("notifications_navigateur", "true");
+      setNotifsActivees(true);
+      setMessageNotifs("Notifications activées.");
+    } else {
+      localStorage.setItem("notifications_navigateur", "false");
+      setNotifsActivees(false);
+      setMessageNotifs("Notifications désactivées.");
+    }
+  };
+
   // Changement de mot de passe
   const [motDePasseActuel, setMotDePasseActuel] = useState("");
   const [nouveauMotDePasse, setNouveauMotDePasse] = useState("");
@@ -67,6 +94,20 @@ export default function Compte({ onCompteSupprime }) {
 
   return (
     <>
+      <div className="dashboard compte-section">
+        <h3>Notifications</h3>
+        <p className="compte-question-actuelle">
+          Reçois une vraie notification du navigateur (même si l'onglet n'est pas au premier
+          plan) en cas de budget dépassé ou si personne n'a enregistré de dépense commune
+          depuis plusieurs jours.
+        </p>
+        {messageNotifs && <p className="compte-message-ok">{messageNotifs}</p>}
+        <label className="compte-notif-toggle">
+          <input type="checkbox" checked={notifsActivees} onChange={handleToggleNotifs} />
+          Activer les notifications du navigateur
+        </label>
+      </div>
+
       <div className="dashboard compte-section">
         <h3>Changer mon mot de passe</h3>
         {messageMotDePasse && <p className="compte-message-ok">{messageMotDePasse}</p>}

@@ -1010,6 +1010,62 @@ button:disabled {
   margin-right: 8px;
 }
 
+/* ---------- Bandeaux d'alerte ---------- */
+
+.alertes-bandeau {
+  max-width: 640px;
+  margin: 0 auto 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.alerte-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(156, 70, 48, 0.08);
+  border: 1px solid rgba(156, 70, 48, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--color-brick);
+  font-size: 0.88rem;
+}
+
+.alerte-item span {
+  flex: 1;
+}
+
+.alerte-fermer {
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+  color: var(--color-brick);
+  padding: 4px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.alerte-fermer:hover {
+  background: rgba(156, 70, 48, 0.15);
+  transform: none;
+  box-shadow: none;
+}
+
+.compte-notif-toggle {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+  color: var(--color-ink);
+}
+
+.compte-notif-toggle input {
+  width: auto;
+  accent-color: var(--color-brass);
+}
+
 /* ---------- Clé de répartition ---------- */
 
 .cle-repartition-intro {
@@ -1180,6 +1236,7 @@ button:disabled {
   .gestion-categories,
   .budget-bloc form,
   .contenu-header,
+  .alertes-bandeau,
   .tableau-supprimer {
     display: none !important;
   }
