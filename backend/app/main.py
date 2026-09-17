@@ -23,7 +23,7 @@ app = FastAPI(title="Comptes Communs API")
 # Autorise le frontend React (à ajuster selon l'URL de déploiement)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=["http://localhost:5173", "http://localhost:3000", "https://comptes-commun-kqbhe8yvc-pierre-910e.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
