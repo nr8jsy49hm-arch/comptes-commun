@@ -1,4 +1,5 @@
 import logging
+import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -26,24 +27,27 @@ from .routers import (
 
 logger = logging.getLogger("uvicorn.error")
 
-# Crée les tables si elles n'existent pas (à remplacer par Alembic en prod)
-Base.metadata.create_all(bind=engine)
+# En test (voir tests/conftest.py), on ne veut surtout pas se connecter à la vraie base
+# Postgres au moment de l'import — les tests utilisent leur propre base SQLite isolée.
+if os.getenv("TESTING") != "1":
+    # Crée les tables si elles n'existent pas (à remplacer par Alembic en prod)
+    Base.metadata.create_all(bind=engine)
 
-# Mini-migration additive : ajoute les colonnes apparues après la création initiale des
-# tables (create_all ne modifie jamais les tables existantes, seulement les nouvelles).
-with engine.connect() as _conn:
-    _conn.execute(
-        text(
-            "ALTER TABLE depenses ADD COLUMN IF NOT EXISTS partagee BOOLEAN NOT NULL DEFAULT TRUE"
+    # Mini-migration additive : ajoute les colonnes apparues après la création initiale des
+    # tables (create_all ne modifie jamais les tables existantes, seulement les nouvelles).
+    with engine.connect() as _conn:
+        _conn.execute(
+            text(
+                "ALTER TABLE depenses ADD COLUMN IF NOT EXISTS partagee BOOLEAN NOT NULL DEFAULT TRUE"
+            )
         )
-    )
-    _conn.execute(
-        text("ALTER TABLE utilisateurs ADD COLUMN IF NOT EXISTS question_secrete VARCHAR")
-    )
-    _conn.execute(
-        text("ALTER TABLE utilisateurs ADD COLUMN IF NOT EXISTS reponse_secrete_hash VARCHAR")
-    )
-    _conn.commit()
+        _conn.execute(
+            text("ALTER TABLE utilisateurs ADD COLUMN IF NOT EXISTS question_secrete VARCHAR")
+        )
+        _conn.execute(
+            text("ALTER TABLE utilisateurs ADD COLUMN IF NOT EXISTS reponse_secrete_hash VARCHAR")
+        )
+        _conn.commit()
 
 # Avertissement (pas un blocage, pour ne pas casser un déploiement déjà en place) si la
 # clé secrète JWT est restée sur sa valeur par défaut — à corriger via la variable

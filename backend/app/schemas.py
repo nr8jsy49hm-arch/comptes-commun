@@ -5,7 +5,7 @@ from typing import Optional
 LONGUEUR_MIN_MOT_DE_PASSE = 8
 
 
-def _valider_longueur_mot_de_passe(v: str) -> str:
+def _valider_longueur_mot_de_passe(cls, v: str) -> str:
     if len(v) < LONGUEUR_MIN_MOT_DE_PASSE:
         raise ValueError(f"Le mot de passe doit faire au moins {LONGUEUR_MIN_MOT_DE_PASSE} caractères")
     return v

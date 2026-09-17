@@ -52,6 +52,11 @@ def _calculer_balance(foyer_id: int, db: Session) -> List[schemas.BalanceRespons
         elif r.de_utilisateur_id == u2.id:
             paye_par_u2 += r.montant
 
+        if r.vers_utilisateur_id == u1.id:
+            paye_par_u1 -= r.montant
+        elif r.vers_utilisateur_id == u2.id:
+            paye_par_u2 -= r.montant
+
     solde_u1 = paye_par_u1 - part_u1
     solde_u2 = paye_par_u2 - part_u2
 

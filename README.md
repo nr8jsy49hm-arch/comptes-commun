@@ -98,8 +98,33 @@ L'onglet Solo a maintenant la même richesse que les comptes communs : budget me
 
 ## Prochaines pistes (discutées mais pas encore faites)
 
-- Tests automatisés et migrations Alembic propres (remplaceraient la mini-migration manuelle actuelle).
 - Connexion bancaire automatique : nécessite un agrégateur tiers agréé (Bridge, Powens...), avec inscription développeur et éventuels frais — à cadrer séparément.
+
+## Tests automatisés
+
+Suite de tests pytest, isolée de la vraie base (utilise une base SQLite en mémoire, recréée à chaque test).
+
+```bash
+cd backend
+pip install -r requirements-dev.txt --break-system-packages   # ou sans ce flag si venv actif
+pytest
+```
+
+Couverture actuelle : inscription/connexion, mot de passe (changement, question secrète, réinitialisation), dépenses (création/suppression/isolation solo-commun), catégories (renommer, suppression bloquée si utilisée), budget et reste à vivre, répartition (50/50 par défaut, personnalisée, effet d'un règlement), objectifs d'épargne.
+
+## Migrations Alembic (structure posée, pas encore activée)
+
+Alembic est en place (`alembic.ini`, `migrations/`) avec une migration `0001_baseline` qui décrit fidèlement le schéma actuel. **Le `Procfile` et `main.py` n'ont volontairement pas été changés pour l'instant** — la mini-migration manuelle continue de tourner comme avant, pour ne rien casser en prod.
+
+La bascule complète (le `Procfile` lancera `alembic upgrade head` avant de démarrer le serveur, et `main.py` perdra son bloc de migration manuelle) se fera en deux temps, une fois que la base de production sera "calée" sur cette migration de référence sans la rejouer :
+
+```bash
+# Depuis ton poste, avec l'URL publique PostgreSQL de Railway (onglet Connect du service Postgres)
+$env:DATABASE_URL="<url-postgres-publique-de-railway>"   # PowerShell
+alembic stamp 0001
+```
+
+Cette étape se fera ensemble avant de basculer le `Procfile`.
 
 ## Sécurité
 
