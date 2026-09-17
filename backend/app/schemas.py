@@ -1,6 +1,14 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from datetime import date
 from typing import Optional
+
+LONGUEUR_MIN_MOT_DE_PASSE = 8
+
+
+def _valider_longueur_mot_de_passe(v: str) -> str:
+    if len(v) < LONGUEUR_MIN_MOT_DE_PASSE:
+        raise ValueError(f"Le mot de passe doit faire au moins {LONGUEUR_MIN_MOT_DE_PASSE} caractères")
+    return v
 
 
 class UtilisateurCreate(BaseModel):
@@ -11,6 +19,8 @@ class UtilisateurCreate(BaseModel):
     code_foyer: Optional[int] = None  # id du foyer existant à rejoindre (ex: la conjointe qui rejoint Pierre)
     question_secrete: Optional[str] = None
     reponse_secrete: Optional[str] = None
+
+    _valider_mdp = field_validator("mot_de_passe")(_valider_longueur_mot_de_passe)
 
 
 class UtilisateurLogin(BaseModel):
@@ -38,6 +48,8 @@ class ChangerMotDePasse(BaseModel):
     mot_de_passe_actuel: str
     nouveau_mot_de_passe: str
 
+    _valider_mdp = field_validator("nouveau_mot_de_passe")(_valider_longueur_mot_de_passe)
+
 
 class SupprimerCompte(BaseModel):
     mot_de_passe: str
@@ -60,6 +72,8 @@ class MotDePasseOublieReinitialiser(BaseModel):
     email: EmailStr
     reponse: str
     nouveau_mot_de_passe: str
+
+    _valider_mdp = field_validator("nouveau_mot_de_passe")(_valider_longueur_mot_de_passe)
 
 
 class CategorieBase(BaseModel):

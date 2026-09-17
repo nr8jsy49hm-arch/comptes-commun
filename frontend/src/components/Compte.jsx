@@ -4,6 +4,7 @@ import {
   definirQuestionSecrete,
   getMaQuestionSecrete,
   supprimerCompte,
+  extraireErreur,
 } from "../api";
 
 export default function Compte({ onCompteSupprime }) {
@@ -65,7 +66,7 @@ export default function Compte({ onCompteSupprime }) {
       setNouveauMotDePasse("");
       setMessageMotDePasse("Mot de passe mis à jour.");
     } catch (err) {
-      setErreurMotDePasse(err.response?.data?.detail || "Erreur, réessaie.");
+      setErreurMotDePasse(extraireErreur(err, "Erreur, réessaie."));
     }
   };
 
@@ -122,9 +123,10 @@ export default function Compte({ onCompteSupprime }) {
           />
           <input
             type="password"
-            placeholder="Nouveau mot de passe"
+            placeholder="Nouveau mot de passe (8 caractères minimum)"
             value={nouveauMotDePasse}
             onChange={(e) => setNouveauMotDePasse(e.target.value)}
+            minLength={8}
             required
           />
           <button type="submit">Mettre à jour</button>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { demanderQuestionSecrete, reinitialiserMotDePasse } from "../api";
+import { demanderQuestionSecrete, reinitialiserMotDePasse, extraireErreur } from "../api";
 
 export default function MotDePasseOublie({ onRetourConnexion }) {
   const [etape, setEtape] = useState("email"); // "email" | "reponse" | "fait"
@@ -30,7 +30,7 @@ export default function MotDePasseOublie({ onRetourConnexion }) {
       await reinitialiserMotDePasse(email, reponse, nouveauMotDePasse);
       setEtape("fait");
     } catch (err) {
-      setErreur(err.response?.data?.detail || "Réponse incorrecte, réessaie.");
+      setErreur(extraireErreur(err, "Réponse incorrecte, réessaie."));
     }
   };
 
@@ -61,9 +61,10 @@ export default function MotDePasseOublie({ onRetourConnexion }) {
         />
         <input
           type="password"
-          placeholder="Nouveau mot de passe"
+          placeholder="Nouveau mot de passe (8 caractères minimum)"
           value={nouveauMotDePasse}
           onChange={(e) => setNouveauMotDePasse(e.target.value)}
+          minLength={8}
           required
         />
         <button type="submit">Réinitialiser le mot de passe</button>

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -7,12 +7,14 @@ from .. import models, schemas
 from ..database import get_db
 from ..security import hash_password, verify_password, create_access_token
 from ..deps import get_current_user
+from ..limiter import limiter
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=schemas.Token)
-def register(payload: schemas.UtilisateurCreate, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def register(request: Request, payload: schemas.UtilisateurCreate, db: Session = Depends(get_db)):
     existant = db.query(models.Utilisateur).filter(models.Utilisateur.email == payload.email).first()
     if existant:
         raise HTTPException(status_code=400, detail="Un compte existe déjà avec cet email")
@@ -47,7 +49,8 @@ def register(payload: schemas.UtilisateurCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=schemas.Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     # OAuth2PasswordRequestForm attend "username" : on y met l'email
     utilisateur = db.query(models.Utilisateur).filter(models.Utilisateur.email == form_data.username).first()
     if not utilisateur or not verify_password(form_data.password, utilisateur.mot_de_passe_hash):
@@ -96,7 +99,8 @@ def obtenir_ma_question_secrete(
 
 
 @router.post("/mot-de-passe-oublie/question", response_model=schemas.MotDePasseOublieQuestion)
-def obtenir_question_secrete(payload: schemas.MotDePasseOublieDemande, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def obtenir_question_secrete(request: Request, payload: schemas.MotDePasseOublieDemande, db: Session = Depends(get_db)):
     utilisateur = db.query(models.Utilisateur).filter(models.Utilisateur.email == payload.email).first()
     # Réponse volontairement neutre si l'email est inconnu ou sans question définie,
     # pour ne pas révéler quels emails existent.
@@ -106,8 +110,9 @@ def obtenir_question_secrete(payload: schemas.MotDePasseOublieDemande, db: Sessi
 
 
 @router.post("/mot-de-passe-oublie/reinitialiser")
+@limiter.limit("5/minute")
 def reinitialiser_mot_de_passe(
-    payload: schemas.MotDePasseOublieReinitialiser, db: Session = Depends(get_db)
+    request: Request, payload: schemas.MotDePasseOublieReinitialiser, db: Session = Depends(get_db)
 ):
     utilisateur = db.query(models.Utilisateur).filter(models.Utilisateur.email == payload.email).first()
     if (

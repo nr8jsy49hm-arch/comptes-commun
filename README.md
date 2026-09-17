@@ -98,9 +98,16 @@ L'onglet Solo a maintenant la même richesse que les comptes communs : budget me
 
 ## Prochaines pistes (discutées mais pas encore faites)
 
-- Sécurité des données (durcissement au-delà de l'existant : JWT, bcrypt, HTTPS via Railway/Vercel).
 - Tests automatisés et migrations Alembic propres (remplaceraient la mini-migration manuelle actuelle).
 - Connexion bancaire automatique : nécessite un agrégateur tiers agréé (Bridge, Powens...), avec inscription développeur et éventuels frais — à cadrer séparément.
+
+## Sécurité
+
+- **Limitation de débit (anti brute-force)** : connexion (10/min), inscription et mot de passe oublié (5/min chacune) par adresse IP, via `slowapi`. Au-delà, l'API renvoie une erreur 429.
+- **Mot de passe minimum 8 caractères**, imposé côté serveur (Pydantic) à l'inscription, au changement de mot de passe et à la réinitialisation — pas seulement une suggestion côté frontend.
+- **En-têtes de sécurité HTTP** : `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` ajoutés à chaque réponse.
+- **Alerte au démarrage** si `SECRET_KEY` n'a pas été changée (reste sur sa valeur par défaut) — visible dans les logs Railway. **Vérifie que tu as bien une vraie valeur définie** dans les variables d'environnement Railway du backend (généré avec `openssl rand -hex 32` par exemple).
+- Déjà en place depuis le début : mots de passe hashés (bcrypt), tokens JWT, HTTPS géré automatiquement par Railway et Vercel, CORS restreint aux domaines connus, pas de fuite d'information sur l'existence d'un compte (messages d'erreur génériques à la connexion et à la récupération de mot de passe).
 
 ## Notifications
 

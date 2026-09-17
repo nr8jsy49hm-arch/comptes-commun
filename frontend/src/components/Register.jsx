@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { register } from "../api";
+import { register, extraireErreur } from "../api";
 
 export default function Register({ onInscrit, onAllerConnexion }) {
   const [nom, setNom] = useState("");
@@ -32,9 +32,7 @@ export default function Register({ onInscrit, onAllerConnexion }) {
       localStorage.setItem("utilisateur", JSON.stringify(res.data.utilisateur));
       onInscrit(res.data.utilisateur);
     } catch (err) {
-      setErreur(
-        err.response?.data?.detail || "Erreur lors de l'inscription, réessaie."
-      );
+      setErreur(extraireErreur(err, "Erreur lors de l'inscription, réessaie."));
     }
   };
 
@@ -59,9 +57,10 @@ export default function Register({ onInscrit, onAllerConnexion }) {
       />
       <input
         type="password"
-        placeholder="Mot de passe"
+        placeholder="Mot de passe (8 caractères minimum)"
         value={motDePasse}
         onChange={(e) => setMotDePasse(e.target.value)}
+        minLength={8}
         required
       />
 

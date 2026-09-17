@@ -122,3 +122,13 @@ export const exporterDepensesSoloCsv = () =>
 export const getAlertes = () => api.get("/alertes/");
 
 export default api;
+
+// Extrait un message lisible d'une erreur API : gère à la fois les erreurs
+// FastAPI simples (detail = texte) et les erreurs de validation Pydantic
+// (detail = liste d'objets {msg, ...}).
+export function extraireErreur(err, messageParDefaut) {
+  const detail = err.response?.data?.detail;
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) return detail.map((d) => d.msg).join(" ");
+  return messageParDefaut;
+}
