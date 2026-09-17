@@ -82,3 +82,10 @@ L'onglet Solo a maintenant la même richesse que les comptes communs : budget me
 - Icône automatique par catégorie (déduite du nom — courses, logement, transport, etc.), visible partout où les catégories apparaissent.
 - Mode sombre (bouton dans la barre latérale, suit la préférence du système par défaut, mémorisé ensuite).
 - Tableaux de dépenses triables (cliquer sur un en-tête de colonne) avec suppression, dans l'onglet Dépenses et dans le mode Solo.
+
+## Gestion du compte
+
+- **Changer son mot de passe** : depuis "Mon compte" (bouton dans la barre latérale), en connaissant son mot de passe actuel.
+- **Question secrète** : définissable à l'inscription ou depuis "Mon compte" — sert à la récupération de mot de passe sans email.
+- **Mot de passe oublié** : lien sur l'écran de connexion, demande l'email puis la réponse à la question secrète. Si aucune question n'a été définie pour ce compte, la récupération n'est pas possible par ce biais (il faut alors modifier directement la base, ou demander à son/sa partenaire).
+- **Supprimer son compte** : depuis "Mon compte", avec confirmation par mot de passe. Les dépenses et le budget personnels (mode solo) sont supprimés automatiquement ; si des dépenses ou règlements communs existent, la suppression est bloquée pour l'instant (pas de transfert de propriété implémenté).

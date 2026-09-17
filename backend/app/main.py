@@ -16,6 +16,12 @@ with engine.connect() as _conn:
             "ALTER TABLE depenses ADD COLUMN IF NOT EXISTS partagee BOOLEAN NOT NULL DEFAULT TRUE"
         )
     )
+    _conn.execute(
+        text("ALTER TABLE utilisateurs ADD COLUMN IF NOT EXISTS question_secrete VARCHAR")
+    )
+    _conn.execute(
+        text("ALTER TABLE utilisateurs ADD COLUMN IF NOT EXISTS reponse_secrete_hash VARCHAR")
+    )
     _conn.commit()
 
 app = FastAPI(title="Comptes Communs API")
@@ -23,7 +29,11 @@ app = FastAPI(title="Comptes Communs API")
 # Autorise le frontend React (à ajuster selon l'URL de déploiement)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000", "https://comptes-commun.vercel.app"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://comptes-commun.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

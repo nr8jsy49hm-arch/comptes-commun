@@ -23,6 +23,8 @@ class Utilisateur(Base):
     nom = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False, index=True)
     mot_de_passe_hash = Column(String, nullable=False)
+    question_secrete = Column(String, nullable=True)
+    reponse_secrete_hash = Column(String, nullable=True)
     foyer_id = Column(Integer, ForeignKey("foyers.id"))
 
     foyer = relationship("Foyer", back_populates="membres")

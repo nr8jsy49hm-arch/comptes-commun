@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from .. import models, schemas
 from ..database import get_db
@@ -32,6 +33,10 @@ def register(payload: schemas.UtilisateurCreate, db: Session = Depends(get_db)):
         email=payload.email,
         mot_de_passe_hash=hash_password(payload.mot_de_passe),
         foyer_id=foyer.id,
+        question_secrete=payload.question_secrete or None,
+        reponse_secrete_hash=hash_password(payload.reponse_secrete.strip().lower())
+        if payload.reponse_secrete
+        else None,
     )
     db.add(utilisateur)
     db.commit()
@@ -55,3 +60,96 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 @router.get("/me", response_model=schemas.UtilisateurOut)
 def me(current_user: models.Utilisateur = Depends(get_current_user)):
     return current_user
+
+
+@router.post("/mot-de-passe")
+def changer_mot_de_passe(
+    payload: schemas.ChangerMotDePasse,
+    db: Session = Depends(get_db),
+    current_user: models.Utilisateur = Depends(get_current_user),
+):
+    if not verify_password(payload.mot_de_passe_actuel, current_user.mot_de_passe_hash):
+        raise HTTPException(status_code=401, detail="Mot de passe actuel incorrect")
+
+    current_user.mot_de_passe_hash = hash_password(payload.nouveau_mot_de_passe)
+    db.commit()
+    return {"ok": True}
+
+
+@router.post("/question-secrete")
+def definir_question_secrete(
+    payload: schemas.DefinirQuestionSecrete,
+    db: Session = Depends(get_db),
+    current_user: models.Utilisateur = Depends(get_current_user),
+):
+    current_user.question_secrete = payload.question
+    current_user.reponse_secrete_hash = hash_password(payload.reponse.strip().lower())
+    db.commit()
+    return {"ok": True}
+
+
+@router.get("/question-secrete", response_model=schemas.MotDePasseOublieQuestion)
+def obtenir_ma_question_secrete(
+    current_user: models.Utilisateur = Depends(get_current_user),
+):
+    return schemas.MotDePasseOublieQuestion(question=current_user.question_secrete)
+
+
+@router.post("/mot-de-passe-oublie/question", response_model=schemas.MotDePasseOublieQuestion)
+def obtenir_question_secrete(payload: schemas.MotDePasseOublieDemande, db: Session = Depends(get_db)):
+    utilisateur = db.query(models.Utilisateur).filter(models.Utilisateur.email == payload.email).first()
+    # Réponse volontairement neutre si l'email est inconnu ou sans question définie,
+    # pour ne pas révéler quels emails existent.
+    if not utilisateur or not utilisateur.question_secrete:
+        return schemas.MotDePasseOublieQuestion(question=None)
+    return schemas.MotDePasseOublieQuestion(question=utilisateur.question_secrete)
+
+
+@router.post("/mot-de-passe-oublie/reinitialiser")
+def reinitialiser_mot_de_passe(
+    payload: schemas.MotDePasseOublieReinitialiser, db: Session = Depends(get_db)
+):
+    utilisateur = db.query(models.Utilisateur).filter(models.Utilisateur.email == payload.email).first()
+    if (
+        not utilisateur
+        or not utilisateur.reponse_secrete_hash
+        or not verify_password(payload.reponse.strip().lower(), utilisateur.reponse_secrete_hash)
+    ):
+        raise HTTPException(status_code=401, detail="Réponse incorrecte")
+
+    utilisateur.mot_de_passe_hash = hash_password(payload.nouveau_mot_de_passe)
+    db.commit()
+    return {"ok": True}
+
+
+@router.delete("/compte")
+def supprimer_compte(
+    payload: schemas.SupprimerCompte,
+    db: Session = Depends(get_db),
+    current_user: models.Utilisateur = Depends(get_current_user),
+):
+    if not verify_password(payload.mot_de_passe, current_user.mot_de_passe_hash):
+        raise HTTPException(status_code=401, detail="Mot de passe incorrect")
+
+    # Nettoie d'abord les données strictement personnelles (sans impact sur l'autre membre)
+    db.query(models.BudgetPersonnel).filter(models.BudgetPersonnel.utilisateur_id == current_user.id).delete()
+    db.query(models.Depense).filter(
+        models.Depense.payeur_id == current_user.id, models.Depense.partagee == False
+    ).delete()
+    db.commit()
+
+    try:
+        db.delete(current_user)
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Impossible de supprimer ce compte : il reste des dépenses ou règlements communs "
+                "qui le référencent. Contacte-nous si tu veux qu'on ajoute un vrai transfert de "
+                "propriété de ces données avant suppression."
+            ),
+        )
+
+    return {"ok": True}

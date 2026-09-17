@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { login } from "../api";
 
-export default function Login({ onConnecte, onAllerInscription }) {
+export default function Login({ onConnecte, onAllerInscription, onMotDePasseOublie }) {
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
   const [erreur, setErreur] = useState("");
@@ -40,6 +40,11 @@ export default function Login({ onConnecte, onAllerInscription }) {
         required
       />
       <button type="submit">Se connecter</button>
+      <p>
+        <button type="button" className="lien" onClick={onMotDePasseOublie}>
+          Mot de passe oublié ?
+        </button>
+      </p>
       <p>
         Pas encore de compte ?{" "}
         <button type="button" className="lien" onClick={onAllerInscription}>

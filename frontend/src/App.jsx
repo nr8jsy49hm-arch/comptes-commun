@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, Home, Wallet, Target, History, LogOut, Sun, Moon } from "lucide-react";
+import { User, Home, Wallet, Target, History, LogOut, Sun, Moon, Settings } from "lucide-react";
 import Dashboard from "./components/Dashboard";
 import DepenseForm from "./components/DepenseForm";
 import Reglement from "./components/Reglement";
@@ -7,8 +7,10 @@ import ListeDepenses from "./components/ListeDepenses";
 import Historique from "./components/Historique";
 import Objectifs from "./components/Objectifs";
 import SoloDepenses from "./components/SoloDepenses";
+import Compte from "./components/Compte";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import MotDePasseOublie from "./components/MotDePasseOublie";
 
 function getUtilisateurStocke() {
   const raw = localStorage.getItem("utilisateur");
@@ -50,20 +52,29 @@ export default function App() {
     setUtilisateur(null);
   };
 
+  const handleCompteSupprime = () => {
+    handleDeconnexion();
+  };
+
   if (!utilisateur) {
     return (
       <div className="app app-auth">
         <h1>Comptes Communs</h1>
-        {ecranAuth === "login" ? (
+        {ecranAuth === "login" && (
           <Login
             onConnecte={setUtilisateur}
             onAllerInscription={() => setEcranAuth("register")}
+            onMotDePasseOublie={() => setEcranAuth("oublie")}
           />
-        ) : (
+        )}
+        {ecranAuth === "register" && (
           <Register
             onInscrit={setUtilisateur}
             onAllerConnexion={() => setEcranAuth("login")}
           />
+        )}
+        {ecranAuth === "oublie" && (
+          <MotDePasseOublie onRetourConnexion={() => setEcranAuth("login")} />
         )}
       </div>
     );
@@ -98,6 +109,14 @@ export default function App() {
             <span className="sidebar-utilisateur-nom">{utilisateur.nom}</span>
             <span className="sidebar-utilisateur-foyer">Foyer n°{utilisateur.foyer_id}</span>
           </div>
+          <button
+            type="button"
+            className={`nav-item${ongletActif === "compte" ? " nav-item-actif" : ""}`}
+            onClick={() => setOngletActif("compte")}
+          >
+            <Settings size={17} strokeWidth={1.75} />
+            <span>Mon compte</span>
+          </button>
           <button type="button" className="nav-item nav-item-deconnexion" onClick={handleDeconnexion}>
             <LogOut size={17} strokeWidth={1.75} />
             <span>Déconnexion</span>
@@ -111,7 +130,7 @@ export default function App() {
 
       <main className="contenu">
         <header className="contenu-header">
-          <h1>{ongletCourant?.label}</h1>
+          <h1>{ongletActif === "compte" ? "Mon compte" : ongletCourant?.label}</h1>
         </header>
 
         <div className="contenu-page" key={ongletActif}>
@@ -130,6 +149,8 @@ export default function App() {
           {ongletActif === "objectifs" && <Objectifs />}
 
           {ongletActif === "historique" && <Historique key={refreshKey} />}
+
+          {ongletActif === "compte" && <Compte onCompteSupprime={handleCompteSupprime} />}
         </div>
       </main>
     </div>

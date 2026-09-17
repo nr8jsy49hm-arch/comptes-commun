@@ -40,6 +40,24 @@ export const register = (payload) => api.post("/auth/register", payload);
 
 export const getMe = () => api.get("/auth/me");
 
+// --- Gestion du compte ---
+export const changerMotDePasse = (mot_de_passe_actuel, nouveau_mot_de_passe) =>
+  api.post("/auth/mot-de-passe", { mot_de_passe_actuel, nouveau_mot_de_passe });
+
+export const definirQuestionSecrete = (question, reponse) =>
+  api.post("/auth/question-secrete", { question, reponse });
+
+export const getMaQuestionSecrete = () => api.get("/auth/question-secrete");
+
+export const supprimerCompte = (mot_de_passe) =>
+  api.delete("/auth/compte", { data: { mot_de_passe } });
+
+export const demanderQuestionSecrete = (email) =>
+  api.post("/auth/mot-de-passe-oublie/question", { email });
+
+export const reinitialiserMotDePasse = (email, reponse, nouveau_mot_de_passe) =>
+  api.post("/auth/mot-de-passe-oublie/reinitialiser", { email, reponse, nouveau_mot_de_passe });
+
 // --- Dépenses / dashboard / répartition (foyer déduit du token, plus besoin de foyer_id) ---
 export const getDashboard = () => api.get("/dashboard/");
 export const getDepenses = () => api.get("/depenses/");

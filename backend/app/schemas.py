@@ -9,6 +9,8 @@ class UtilisateurCreate(BaseModel):
     mot_de_passe: str
     nom_foyer: Optional[str] = None  # si fourni, crée un nouveau foyer ; sinon rejoint via code_foyer
     code_foyer: Optional[int] = None  # id du foyer existant à rejoindre (ex: la conjointe qui rejoint Pierre)
+    question_secrete: Optional[str] = None
+    reponse_secrete: Optional[str] = None
 
 
 class UtilisateurLogin(BaseModel):
@@ -30,6 +32,34 @@ class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
     utilisateur: UtilisateurOut
+
+
+class ChangerMotDePasse(BaseModel):
+    mot_de_passe_actuel: str
+    nouveau_mot_de_passe: str
+
+
+class SupprimerCompte(BaseModel):
+    mot_de_passe: str
+
+
+class DefinirQuestionSecrete(BaseModel):
+    question: str
+    reponse: str
+
+
+class MotDePasseOublieDemande(BaseModel):
+    email: EmailStr
+
+
+class MotDePasseOublieQuestion(BaseModel):
+    question: Optional[str] = None
+
+
+class MotDePasseOublieReinitialiser(BaseModel):
+    email: EmailStr
+    reponse: str
+    nouveau_mot_de_passe: str
 
 
 class CategorieBase(BaseModel):

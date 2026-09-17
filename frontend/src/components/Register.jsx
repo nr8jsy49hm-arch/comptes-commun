@@ -8,6 +8,8 @@ export default function Register({ onInscrit, onAllerConnexion }) {
   const [mode, setMode] = useState("creer"); // "creer" ou "rejoindre"
   const [nomFoyer, setNomFoyer] = useState("");
   const [codeFoyer, setCodeFoyer] = useState("");
+  const [questionSecrete, setQuestionSecrete] = useState("");
+  const [reponseSecrete, setReponseSecrete] = useState("");
   const [erreur, setErreur] = useState("");
 
   const handleSubmit = async (e) => {
@@ -21,6 +23,9 @@ export default function Register({ onInscrit, onAllerConnexion }) {
         ...(mode === "creer"
           ? { nom_foyer: nomFoyer || undefined }
           : { code_foyer: parseInt(codeFoyer, 10) }),
+        ...(questionSecrete && reponseSecrete
+          ? { question_secrete: questionSecrete, reponse_secrete: reponseSecrete }
+          : {}),
       };
       const res = await register(payload);
       localStorage.setItem("token", res.data.access_token);
@@ -93,6 +98,24 @@ export default function Register({ onInscrit, onAllerConnexion }) {
           value={codeFoyer}
           onChange={(e) => setCodeFoyer(e.target.value)}
           required
+        />
+      )}
+
+      <label>
+        Question secrète (recommandé, pour récupérer ton compte)
+        <input
+          type="text"
+          placeholder="Ex : nom de ton premier animal ?"
+          value={questionSecrete}
+          onChange={(e) => setQuestionSecrete(e.target.value)}
+        />
+      </label>
+      {questionSecrete && (
+        <input
+          type="text"
+          placeholder="Ta réponse"
+          value={reponseSecrete}
+          onChange={(e) => setReponseSecrete(e.target.value)}
         />
       )}
 

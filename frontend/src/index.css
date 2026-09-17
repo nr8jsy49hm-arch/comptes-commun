@@ -921,6 +921,44 @@ button:disabled {
   margin-top: 0;
 }
 
+/* ---------- Mon compte ---------- */
+
+.compte-section {
+  margin-bottom: 20px;
+}
+
+.compte-section form {
+  gap: 10px;
+}
+
+.compte-message-ok {
+  color: var(--color-pine);
+  font-size: 0.85rem;
+  margin: 0 0 10px;
+}
+
+.compte-question-actuelle {
+  font-size: 0.85rem;
+  margin: 0 0 14px;
+}
+
+.compte-danger {
+  border-color: rgba(156, 70, 48, 0.3);
+}
+
+.compte-danger p {
+  font-size: 0.85rem;
+}
+
+.bouton-danger {
+  background: var(--color-brick);
+  color: var(--color-paper);
+}
+
+.bouton-danger:hover:not(:disabled) {
+  background: #7c3820;
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px) {
