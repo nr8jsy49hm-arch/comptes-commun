@@ -127,6 +127,10 @@ $env:DATABASE_URL="<url-du-tunnel>"
 alembic upgrade head
 ```
 
+## Dépenses récurrentes
+
+Onglet Nos Dépenses : programme un loyer, un abonnement ou une facture fixe (nom, montant, jour du mois, catégorie, payeur). Génération **automatique à la demande** — dès que quelqu'un ouvre le Tableau de bord ou la liste des dépenses ce mois-ci, la dépense du mois est créée si elle n'existe pas déjà (pas besoin de tâche planifiée séparée). Si le montant d'une règle change d'un mois sur l'autre, un rappel apparaît dans les notifications. Les règles peuvent être suspendues (sans les supprimer) ou supprimées.
+
 ## Étiquettes libres
 
 En plus des catégories, des étiquettes libres transversales (ex : "Vacances Italie", "Travaux cuisine") permettent de regrouper des dépenses qui traversent plusieurs catégories. Choix multiple à la création d'une dépense (avec création à la volée), gestion (suppression) dans l'onglet Nos Dépenses, et filtre par étiquette dans la liste complète des dépenses. Relation many-to-many en base (une dépense peut avoir plusieurs étiquettes, une étiquette peut couvrir plusieurs dépenses).

@@ -72,11 +72,30 @@ class Depense(Base):
     categorie_id = Column(Integer, ForeignKey("categories.id"))
     payeur_id = Column(Integer, ForeignKey("utilisateurs.id"))
     foyer_id = Column(Integer, ForeignKey("foyers.id"))
+    recurrente_id = Column(Integer, ForeignKey("depenses_recurrentes.id"), nullable=True)
 
     categorie = relationship("Categorie", back_populates="depenses")
     payeur = relationship("Utilisateur")
     foyer = relationship("Foyer", back_populates="depenses")
     etiquettes = relationship("Etiquette", secondary=depense_etiquettes)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class DepenseRecurrente(Base):
+    """Modèle de dépense qui se recrée automatiquement chaque mois (loyer, abonnement...)."""
+    __tablename__ = "depenses_recurrentes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nom = Column(String, nullable=False)
+    montant = Column(Float, nullable=False)
+    jour_du_mois = Column(Integer, nullable=False, default=1)
+    actif = Column(Boolean, nullable=False, default=True, server_default="true")
+    partagee = Column(Boolean, nullable=False, default=True, server_default="true")
+
+    categorie_id = Column(Integer, ForeignKey("categories.id"))
+    payeur_id = Column(Integer, ForeignKey("utilisateurs.id"))
+    foyer_id = Column(Integer, ForeignKey("foyers.id"))
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

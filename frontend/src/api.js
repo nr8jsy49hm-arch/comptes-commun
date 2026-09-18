@@ -93,6 +93,12 @@ export const supprimerEtiquette = (id) => api.delete(`/etiquettes/${id}`);
 export const modifierEtiquettesDepense = (depenseId, etiquette_ids) =>
   api.patch(`/depenses/${depenseId}/etiquettes`, { etiquette_ids });
 
+// --- Dépenses récurrentes ---
+export const getDepensesRecurrentes = () => api.get("/depenses-recurrentes/");
+export const creerDepenseRecurrente = (payload) => api.post("/depenses-recurrentes/", payload);
+export const modifierDepenseRecurrente = (id, payload) => api.patch(`/depenses-recurrentes/${id}`, payload);
+export const supprimerDepenseRecurrente = (id) => api.delete(`/depenses-recurrentes/${id}`);
+
 // --- Invitations (rejoindre un foyer) ---
 export const creerInvitation = () => api.post("/foyer/invitations");
 export const listerInvitations = () => api.get("/foyer/invitations");

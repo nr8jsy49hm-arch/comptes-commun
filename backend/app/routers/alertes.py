@@ -5,6 +5,7 @@ from datetime import date
 from .. import models, schemas
 from ..database import get_db
 from ..deps import get_current_user
+from ..recurrentes import generer_recurrentes_du_mois
 
 router = APIRouter(prefix="/alertes", tags=["alertes"])
 
@@ -14,6 +15,8 @@ def obtenir_alertes(
     db: Session = Depends(get_db),
     current_user: models.Utilisateur = Depends(get_current_user),
 ):
+    changements_recurrentes = generer_recurrentes_du_mois(current_user.foyer_id, db)
+
     aujourdhui = date.today()
     debut_mois = aujourdhui.replace(day=1)
 
@@ -70,4 +73,5 @@ def obtenir_alertes(
         depassement_budget_commun=depassement_commun,
         depassement_budget_solo=depassement_solo,
         jours_sans_depense_commune=jours_sans_depense,
+        changements_recurrentes=changements_recurrentes,
     )

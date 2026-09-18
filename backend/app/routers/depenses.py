@@ -5,6 +5,7 @@ from typing import List
 from .. import models, schemas
 from ..database import get_db
 from ..deps import get_current_user
+from ..recurrentes import generer_recurrentes_du_mois
 
 router = APIRouter(prefix="/depenses", tags=["depenses"])
 
@@ -15,6 +16,7 @@ def lister_depenses(
     db: Session = Depends(get_db),
     current_user: models.Utilisateur = Depends(get_current_user),
 ):
+    generer_recurrentes_du_mois(current_user.foyer_id, db)
     requete = db.query(models.Depense).filter(models.Depense.foyer_id == current_user.foyer_id)
     if etiquette_id is not None:
         requete = requete.filter(models.Depense.etiquettes.any(models.Etiquette.id == etiquette_id))

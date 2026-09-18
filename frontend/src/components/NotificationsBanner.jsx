@@ -65,6 +65,12 @@ export default function NotificationsBanner() {
         notifierNavigateur("Rappel de saisie", texte);
       }
 
+      (data.changements_recurrentes || []).forEach((texte, i) => {
+        const cle = `recurrente-${i}-${texte}`;
+        liste.push({ cle, texte });
+        notifierNavigateur("Montant récurrent changé", texte);
+      });
+
       setAlertes(liste);
     });
   }, []);

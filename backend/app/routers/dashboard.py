@@ -5,6 +5,7 @@ from datetime import date
 from .. import models, schemas
 from ..database import get_db
 from ..deps import get_current_user
+from ..recurrentes import generer_recurrentes_du_mois
 from .repartition import _calculer_balance
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
@@ -15,6 +16,8 @@ def obtenir_dashboard(
     db: Session = Depends(get_db),
     current_user: models.Utilisateur = Depends(get_current_user),
 ):
+    generer_recurrentes_du_mois(current_user.foyer_id, db)
+
     aujourdhui = date.today()
     depenses_mois = (
         db.query(models.Depense)

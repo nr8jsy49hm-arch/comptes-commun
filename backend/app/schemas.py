@@ -134,6 +134,7 @@ class Depense(DepenseBase):
     id: int
     foyer_id: int
     etiquettes: list[Etiquette] = []
+    recurrente_id: Optional[int] = None
 
     class Config:
         from_attributes = True
@@ -141,6 +142,38 @@ class Depense(DepenseBase):
 
 class DepenseEtiquettesIn(BaseModel):
     etiquette_ids: list[int]
+
+
+class DepenseRecurrenteBase(BaseModel):
+    nom: str
+    montant: float
+    jour_du_mois: int = 1
+    categorie_id: int
+    payeur_id: int
+    partagee: bool = True
+
+
+class DepenseRecurrenteCreate(DepenseRecurrenteBase):
+    pass
+
+
+class DepenseRecurrenteUpdate(BaseModel):
+    nom: Optional[str] = None
+    montant: Optional[float] = None
+    jour_du_mois: Optional[int] = None
+    categorie_id: Optional[int] = None
+    payeur_id: Optional[int] = None
+    partagee: Optional[bool] = None
+    actif: Optional[bool] = None
+
+
+class DepenseRecurrente(DepenseRecurrenteBase):
+    id: int
+    actif: bool
+    foyer_id: int
+
+    class Config:
+        from_attributes = True
 
 
 class ReglementBase(BaseModel):
@@ -270,6 +303,7 @@ class AlertesResponse(BaseModel):
     depassement_budget_commun: Optional[float] = None
     depassement_budget_solo: Optional[float] = None
     jours_sans_depense_commune: Optional[int] = None
+    changements_recurrentes: list[str] = []
 
 
 class Invitation(BaseModel):
