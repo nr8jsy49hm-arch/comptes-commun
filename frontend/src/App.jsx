@@ -3,6 +3,7 @@ import { User, Home, Wallet, Target, History, LogOut, Sun, Moon, Settings, Calcu
 import Dashboard from "./components/Dashboard";
 import Graphiques from "./components/Graphiques";
 import ComparaisonPeriodes from "./components/ComparaisonPeriodes";
+import SimulateurAchat from "./components/SimulateurAchat";
 import Calculette from "./components/Calculette";
 import DepenseForm from "./components/DepenseForm";
 import Reglement from "./components/Reglement";
@@ -198,6 +199,7 @@ export default function App() {
             <>
               <Dashboard key={refreshKey} />
               <ComparaisonPeriodes key={refreshKey} />
+              <SimulateurAchat key={refreshKey} />
               <Graphiques key={refreshKey} />
             </>
           )}

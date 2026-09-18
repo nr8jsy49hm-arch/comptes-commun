@@ -135,6 +135,10 @@ Onglet Nos Dépenses : programme un loyer, un abonnement ou une facture fixe (no
 
 En plus des catégories, des étiquettes libres transversales (ex : "Vacances Italie", "Travaux cuisine") permettent de regrouper des dépenses qui traversent plusieurs catégories. Choix multiple à la création d'une dépense (avec création à la volée), gestion (suppression) dans l'onglet Nos Dépenses, et filtre par étiquette dans la liste complète des dépenses. Relation many-to-many en base (une dépense peut avoir plusieurs étiquettes, une étiquette peut couvrir plusieurs dépenses).
 
+## Simulateur d'achat
+
+Sur le Tableau de bord : teste l'impact d'une dépense hypothétique (commune ou perso) avant de la valider — nouveau total du mois, et si un budget est défini, le reste à vivre qui en découlerait (avec alerte si ça dépasserait). Rien n'est enregistré, purement informatif ; aucun nouvel endpoint backend.
+
 ## Comparaison de périodes
 
 Sur le Tableau de bord : le mois en cours comparé au mois précédent et au même mois l'an dernier, avec le delta en pourcentage (hausse en brique, baisse en vert). Réutilise les données déjà exposées par l'historique, aucun nouvel endpoint backend.

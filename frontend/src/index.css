@@ -1614,6 +1614,46 @@ button:disabled {
   }
 }
 
+/* ---------- Simulateur d'achat ---------- */
+
+.simulateur-contexte {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--color-line);
+  margin-bottom: 16px;
+}
+
+.simulateur-input {
+  margin-bottom: 4px;
+}
+
+.simulateur-resultat {
+  margin-top: 16px;
+}
+
+.simulateur-alerte {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.simulateur-alerte-danger {
+  background: rgba(156, 70, 48, 0.1);
+  color: var(--color-brick);
+}
+
+.simulateur-alerte-ok {
+  background: rgba(59, 98, 85, 0.1);
+  color: var(--color-pine);
+}
+
+.simulateur-sans-budget {
+  font-size: 0.85rem;
+  margin: 10px 0 0;
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px) {
@@ -1722,6 +1762,7 @@ button:disabled {
   .recurrentes,
   .graphiques,
   .comparaison-periodes,
+  .simulateur,
   .budget-bloc form,
   .contenu-header,
   .alertes-bandeau,
