@@ -134,6 +134,30 @@ alembic upgrade head
 - **Traçabilité du consentement** : la date d'acceptation des CGU est enregistrée à l'inscription (`cgu_acceptees_le`), et l'inscription est bloquée si la case n'est pas cochée.
 - Déjà couvert ailleurs : droit à l'effacement (suppression de compte), droit de rectification (modifiable dans l'appli).
 
+## Sauvegardes automatiques
+
+Une sauvegarde complète de la base (toutes les tables, au format JSON) est générée automatiquement chaque nuit via **GitHub Actions** (`.github/workflows/backup.yml`) — gratuit, aucun service tiers à payer.
+
+**Mise en place (une fois) :**
+1. Sur Railway, backend → Variables : ajoute `BACKUP_SECRET` avec une longue chaîne aléatoire (ex : `openssl rand -hex 32`).
+2. Sur GitHub, va sur ton dépôt → **Settings** → **Secrets and variables** → **Actions** → ajoute deux secrets :
+   - `BACKUP_SECRET` : la même valeur qu'à l'étape 1
+   - `BACKEND_URL` : l'URL de ton backend Railway (ex : `https://comptes-commun-production.up.railway.app`)
+3. C'est tout — la sauvegarde tourne automatiquement chaque nuit à 3h UTC. Tu peux aussi la lancer manuellement depuis l'onglet **Actions** du dépôt → "Sauvegarde quotidienne de la base" → **Run workflow**.
+
+Les sauvegardes sont téléchargeables depuis l'onglet Actions → le run concerné → section "Artifacts", conservées 90 jours. Pour restaurer, il faudrait réinjecter le JSON dans la base — pas encore automatisé (à faire si le besoin se présente réellement).
+
+## Monitoring (suivi des erreurs)
+
+Intégration [Sentry](https://sentry.io) (gratuit jusqu'à 5000 erreurs/mois), backend et frontend, pour être alerté si l'appli plante en production plutôt que de le découvrir par hasard.
+
+**Mise en place :**
+1. Crée un compte gratuit sur [sentry.io](https://sentry.io), crée un projet Python (FastAPI) et un projet React — récupère leurs DSN respectifs (Settings → Client Keys).
+2. Sur Railway, backend → Variables : ajoute `SENTRY_DSN` avec le DSN du projet Python.
+3. Sur Vercel, ton projet → Settings → Environment Variables : ajoute `VITE_SENTRY_DSN` avec le DSN du projet React, puis redéploie.
+
+Si ces variables ne sont pas définies, tout fonctionne normalement — le monitoring est simplement inactif.
+
 ## Sécurité
 
 - **Vérification d'email** : à l'inscription, un email de confirmation est envoyé (via Resend). Tant que l'email n'est pas confirmé, un bandeau discret le rappelle dans l'appli, avec un bouton pour renvoyer l'email. **Étapes pour l'activer** :

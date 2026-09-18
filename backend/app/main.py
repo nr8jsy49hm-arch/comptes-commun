@@ -1,4 +1,6 @@
 import logging
+import os
+import sentry_sdk
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
@@ -19,9 +21,15 @@ from .routers import (
     solo,
     export,
     alertes,
+    admin,
 )
 
 logger = logging.getLogger("uvicorn.error")
+
+# Monitoring d'erreurs (optionnel) : n'a d'effet que si SENTRY_DSN est configurée.
+SENTRY_DSN = os.getenv("SENTRY_DSN")
+if SENTRY_DSN and os.getenv("TESTING") != "1":
+    sentry_sdk.init(dsn=SENTRY_DSN, traces_sample_rate=0.1, send_default_pii=False)
 
 # Le schéma de la base est désormais géré par Alembic (voir migrations/), appliqué via
 # `alembic upgrade head` dans le Procfile avant le démarrage du serveur — plus de
@@ -75,6 +83,7 @@ app.include_router(dashboard.router)
 app.include_router(solo.router)
 app.include_router(export.router)
 app.include_router(alertes.router)
+app.include_router(admin.router)
 
 
 @app.get("/")

@@ -1,0 +1,24 @@
+name: Sauvegarde quotidienne de la base
+
+on:
+  schedule:
+    # Tous les jours à 3h du matin UTC (4h ou 5h en France selon l'heure d'été)
+    - cron: "0 3 * * *"
+  workflow_dispatch: {} # permet aussi de lancer une sauvegarde manuellement depuis l'onglet Actions
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Télécharger la sauvegarde depuis l'API
+        run: |
+          curl -sf -H "x-backup-secret: ${{ secrets.BACKUP_SECRET }}" \
+            "${{ secrets.BACKEND_URL }}/admin/backup" \
+            -o backup-$(date +%Y-%m-%d).json
+
+      - name: Publier la sauvegarde comme artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-${{ github.run_id }}
+          path: backup-*.json
+          retention-days: 90
