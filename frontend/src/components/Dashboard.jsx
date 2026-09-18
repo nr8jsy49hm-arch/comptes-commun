@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getDashboard, definirBudget } from "../api";
-import { IconeCategorie } from "../iconesCategories";
+import ClassementCategories from "./ClassementCategories";
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
@@ -95,18 +95,8 @@ export default function Dashboard() {
 
       {Object.keys(data.par_categorie).length > 0 && (
         <>
-          <h3>Par catégorie</h3>
-          <ul>
-            {Object.entries(data.par_categorie).map(([cat, montant]) => (
-              <li key={cat}>
-                <span className="ligne-categorie">
-                  <IconeCategorie nom={cat} />
-                  {cat}
-                </span>
-                <span>{montant.toFixed(2)} €</span>
-              </li>
-            ))}
-          </ul>
+          <h3>Classement par catégorie</h3>
+          <ClassementCategories parCategorie={data.par_categorie} />
         </>
       )}
 

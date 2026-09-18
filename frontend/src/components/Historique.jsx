@@ -4,7 +4,7 @@ import {
   getHistoriqueAnnee,
   getHistoriqueMoisCategories,
 } from "../api";
-import { IconeCategorie } from "../iconesCategories";
+import ClassementCategories from "./ClassementCategories";
 
 export default function Historique({
   getAnnees = getAnneesDisponibles,
@@ -103,17 +103,9 @@ export default function Historique({
             </button>
 
             {moisOuvert === m.mois && categoriesMoisOuvert && (
-              <ul className="historique-categories">
-                {Object.entries(categoriesMoisOuvert).map(([cat, montant]) => (
-                  <li key={cat}>
-                    <span className="ligne-categorie">
-                      <IconeCategorie nom={cat} size={13} />
-                      {cat}
-                    </span>
-                    <span>{montant.toFixed(2)} €</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="historique-categories">
+                <ClassementCategories parCategorie={categoriesMoisOuvert} tailleIcone={13} />
+              </div>
             )}
           </li>
         ))}

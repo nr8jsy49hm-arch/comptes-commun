@@ -199,6 +199,12 @@ class MoisHistorique(BaseModel):
     nb_depenses: int
 
 
+class MoisEvolutionEpargne(BaseModel):
+    mois: int
+    nom_mois: str
+    total_verse: float
+
+
 class ObjectifCreate(BaseModel):
     nom: str
     montant_cible: float

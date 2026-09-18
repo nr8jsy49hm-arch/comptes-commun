@@ -107,6 +107,7 @@ export const creerObjectif = (objectif) => api.post("/objectifs/", objectif);
 export const supprimerObjectif = (id) => api.delete(`/objectifs/${id}`);
 export const verserObjectif = (id, montant) =>
   api.post(`/objectifs/${id}/versements`, { montant });
+export const getEvolutionEpargne = (annee) => api.get(`/objectifs/evolution/${annee}`);
 
 // --- Mode solo ---
 export const getSoloDashboard = () => api.get("/solo/dashboard");

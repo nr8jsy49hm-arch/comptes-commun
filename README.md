@@ -127,6 +127,11 @@ $env:DATABASE_URL="<url-du-tunnel>"
 alembic upgrade head
 ```
 
+## Graphiques et classements
+
+- **Graphiques** (onglet Tableau de bord, bas de page) : dépenses communes par mois (histogramme) et évolution cumulée de l'épargne tous objectifs confondus (courbe), avec sélecteur d'année. Basé sur `recharts`.
+- **Classement automatisé par catégorie** : partout où une répartition par catégorie s'affichait (Tableau de bord, Historique, Solo), c'est maintenant un vrai classement trié (médailles pour le top 3, pourcentage du total, barre de progression) plutôt qu'une simple liste.
+
 ## Foyers à plus de 2 personnes
 
 L'appli n'est plus limitée à un couple : un foyer peut compter autant de membres que nécessaire (colocs, famille...).

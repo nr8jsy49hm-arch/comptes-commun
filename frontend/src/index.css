@@ -359,6 +359,58 @@ p {
   flex-shrink: 0;
 }
 
+/* ---------- Classement des catégories ---------- */
+
+.classement-categories {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+}
+
+.classement-categories li {
+  padding: 8px 0;
+}
+
+.classement-ligne {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.classement-rang {
+  display: inline-block;
+  width: 20px;
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+  flex-shrink: 0;
+}
+
+.classement-montant {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.classement-pct {
+  color: var(--color-ink-soft);
+  font-size: 0.8rem;
+}
+
+.classement-barre {
+  height: 5px;
+  background: var(--color-parchment);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-left: 30px;
+}
+
+.classement-barre-remplie {
+  height: 100%;
+  background: var(--color-brass);
+  border-radius: 999px;
+}
+
 .dashboard h3 {
   border-top: 1px solid var(--color-line);
   padding-top: 20px;
@@ -1224,6 +1276,39 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+/* ---------- Graphiques ---------- */
+
+.graphiques h4 {
+  margin-top: 24px;
+  margin-bottom: 4px;
+}
+
+.graphiques h4:first-of-type {
+  margin-top: 20px;
+}
+
+.graphique-conteneur {
+  margin-bottom: 8px;
+}
+
+.graphique-tooltip {
+  background: var(--color-paper);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-raised);
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  color: var(--color-ink);
+}
+
+.graphique-tooltip strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+  margin-bottom: 2px;
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px) {
@@ -1329,6 +1414,7 @@ button:disabled {
   .reglement,
   .cle-repartition,
   .gestion-categories,
+  .graphiques,
   .budget-bloc form,
   .contenu-header,
   .alertes-bandeau,

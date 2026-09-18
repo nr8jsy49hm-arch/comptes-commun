@@ -14,7 +14,7 @@ import {
 } from "../api";
 import Historique from "./Historique";
 import TableauDepenses from "./TableauDepenses";
-import { IconeCategorie } from "../iconesCategories";
+import ClassementCategories from "./ClassementCategories";
 
 function getUtilisateurStocke() {
   const raw = localStorage.getItem("utilisateur");
@@ -159,18 +159,8 @@ export default function SoloDepenses() {
 
         {Object.keys(data.par_categorie).length > 0 && (
           <>
-            <h3>Par catégorie</h3>
-            <ul>
-              {Object.entries(data.par_categorie).map(([cat, montant]) => (
-                <li key={cat}>
-                  <span className="ligne-categorie">
-                    <IconeCategorie nom={cat} />
-                    {cat}
-                  </span>
-                  <span>{montant.toFixed(2)} €</span>
-                </li>
-              ))}
-            </ul>
+            <h3>Classement par catégorie</h3>
+            <ClassementCategories parCategorie={data.par_categorie} />
           </>
         )}
 

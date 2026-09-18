@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { User, Home, Wallet, Target, History, LogOut, Sun, Moon, Settings } from "lucide-react";
 import Dashboard from "./components/Dashboard";
+import Graphiques from "./components/Graphiques";
 import DepenseForm from "./components/DepenseForm";
 import Reglement from "./components/Reglement";
 import ListeDepenses from "./components/ListeDepenses";
@@ -184,7 +185,12 @@ export default function App() {
         <div className="contenu-page" key={ongletActif}>
           {ongletActif === "solo" && <SoloDepenses />}
 
-          {ongletActif === "tableau" && <Dashboard key={refreshKey} />}
+          {ongletActif === "tableau" && (
+            <>
+              <Dashboard key={refreshKey} />
+              <Graphiques key={refreshKey} />
+            </>
+          )}
 
           {ongletActif === "depenses" && (
             <>

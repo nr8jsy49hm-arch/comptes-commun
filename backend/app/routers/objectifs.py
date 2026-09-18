@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import date
+from calendar import monthrange
 from typing import List
 
 from .. import models, schemas
@@ -8,6 +9,11 @@ from ..database import get_db
 from ..deps import get_current_user
 
 router = APIRouter(prefix="/objectifs", tags=["objectifs"])
+
+NOMS_MOIS = [
+    "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
+]
 
 
 def _vers_schema(obj: models.Objectif) -> schemas.Objectif:
@@ -82,3 +88,35 @@ def ajouter_versement(
     db.commit()
     db.refresh(objectif)
     return _vers_schema(objectif)
+
+
+@router.get("/evolution/{annee}", response_model=List[schemas.MoisEvolutionEpargne])
+def evolution_epargne(
+    annee: int,
+    db: Session = Depends(get_db),
+    current_user: models.Utilisateur = Depends(get_current_user),
+):
+    """Total versé (tous objectifs confondus) chaque mois de l'année, pour le graphique d'épargne."""
+    objectifs_ids = [
+        o.id for o in db.query(models.Objectif).filter(models.Objectif.foyer_id == current_user.foyer_id).all()
+    ]
+    resultat = []
+    for mois in range(1, 13):
+        debut = date(annee, mois, 1)
+        fin = date(annee, mois, monthrange(annee, mois)[1])
+        total = 0.0
+        if objectifs_ids:
+            versements = (
+                db.query(models.VersementObjectif)
+                .filter(
+                    models.VersementObjectif.objectif_id.in_(objectifs_ids),
+                    models.VersementObjectif.date >= debut,
+                    models.VersementObjectif.date <= fin,
+                )
+                .all()
+            )
+            total = sum(v.montant for v in versements)
+        resultat.append(
+            schemas.MoisEvolutionEpargne(mois=mois, nom_mois=NOMS_MOIS[mois - 1], total_verse=round(total, 2))
+        )
+    return resultat
