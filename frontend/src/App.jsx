@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { User, Home, Wallet, Target, History, LogOut, Sun, Moon, Settings, Calculator } from "lucide-react";
 import Dashboard from "./components/Dashboard";
 import Graphiques from "./components/Graphiques";
+import ComparaisonPeriodes from "./components/ComparaisonPeriodes";
 import Calculette from "./components/Calculette";
 import DepenseForm from "./components/DepenseForm";
 import Reglement from "./components/Reglement";
@@ -194,6 +195,7 @@ export default function App() {
           {ongletActif === "tableau" && (
             <>
               <Dashboard key={refreshKey} />
+              <ComparaisonPeriodes key={refreshKey} />
               <Graphiques key={refreshKey} />
             </>
           )}

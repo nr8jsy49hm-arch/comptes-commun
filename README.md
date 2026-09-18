@@ -127,6 +127,14 @@ $env:DATABASE_URL="<url-du-tunnel>"
 alembic upgrade head
 ```
 
+## Comparaison de périodes
+
+Sur le Tableau de bord : le mois en cours comparé au mois précédent et au même mois l'an dernier, avec le delta en pourcentage (hausse en brique, baisse en vert). Réutilise les données déjà exposées par l'historique, aucun nouvel endpoint backend.
+
+## Calculette
+
+Accessible depuis n'importe quel onglet (bouton dans la barre latérale). Opérations de base (+, −, ×, ÷), bouton pour copier le résultat dans le presse-papier — pratique pour calculer un montant avant de le saisir dans un formulaire.
+
 ## Graphiques et classements
 
 - **Graphiques** (onglet Tableau de bord, bas de page) : dépenses communes par mois (histogramme) et évolution cumulée de l'épargne tous objectifs confondus (courbe), avec sélecteur d'année. Basé sur `recharts`.

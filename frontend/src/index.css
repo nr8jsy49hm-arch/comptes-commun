@@ -1407,6 +1407,73 @@ button:disabled {
   margin-bottom: 2px;
 }
 
+/* ---------- Comparaison de périodes ---------- */
+
+.comparaison-grille {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.comparaison-carte {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px;
+  background: var(--color-parchment);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+}
+
+.comparaison-titre {
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
+  font-weight: 500;
+}
+
+.comparaison-montant {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+  margin: 2px 0;
+}
+
+.comparaison-reference {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+  margin-bottom: 6px;
+}
+
+.comparaison-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-line);
+}
+
+.delta-hausse {
+  color: var(--color-brick);
+  background: rgba(156, 70, 48, 0.12);
+}
+
+.delta-baisse {
+  color: var(--color-pine);
+  background: rgba(59, 98, 85, 0.12);
+}
+
+@media (max-width: 480px) {
+  .comparaison-grille {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px) {
@@ -1513,6 +1580,7 @@ button:disabled {
   .cle-repartition,
   .gestion-categories,
   .graphiques,
+  .comparaison-periodes,
   .budget-bloc form,
   .contenu-header,
   .alertes-bandeau,
