@@ -1,9 +1,9 @@
+import os
+
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
-
-import os
 
 from app.database import Base, get_db
 
@@ -11,13 +11,21 @@ os.environ["TESTING"] = "1"  # empêche app.main de tenter de se connecter à la
 
 from app.main import app  # noqa: E402 — importé après avoir posé TESTING
 from app.limiter import limiter
-import app.models  # noqa: F401 — enregistre tous les modèles sur Base avant create_all
+from app import models  # noqa: F401 — enregistre tous les modèles sur Base avant create_all
 
 # Le rate limiting (anti brute-force) n'a pas sa place dans les tests : plusieurs tests
 # appellent /auth/register ou /auth/login à la suite et se feraient bloquer par erreur.
 limiter.enabled = False
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
+# Base de test sur fichier (pas ":memory:") : évite les pièges classiques de SQLite en
+# mémoire où chaque nouvelle connexion peut se retrouver sur une base vide séparée.
+# Chemin RELATIF exprès (pas tempfile/chemin absolu Windows) : un chemin Windows avec
+# des antislashs inséré dans une URL sqlite:/// peut être mal interprété.
+_DB_PATH = "test_comptes_communs.db"
+if os.path.exists(_DB_PATH):
+    os.remove(_DB_PATH)
+
+SQLALCHEMY_DATABASE_URL = f"sqlite:///{_DB_PATH}"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
@@ -30,6 +38,10 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 def base_de_test():
     """Recrée un schéma propre avant chaque test, pour une isolation totale."""
     Base.metadata.create_all(bind=engine)
+    with engine.connect() as conn:
+        tables = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).fetchall()
+        print("\n[DIAGNOSTIC] Tables après create_all:", tables)
+        print("[DIAGNOSTIC] Chemin de la base:", engine.url)
     yield
     Base.metadata.drop_all(bind=engine)
 
