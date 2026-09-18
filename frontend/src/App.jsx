@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { User, Home, Wallet, Target, History, LogOut, Sun, Moon, Settings } from "lucide-react";
+import { User, Home, Wallet, Target, History, LogOut, Sun, Moon, Settings, Calculator } from "lucide-react";
 import Dashboard from "./components/Dashboard";
 import Graphiques from "./components/Graphiques";
+import Calculette from "./components/Calculette";
 import DepenseForm from "./components/DepenseForm";
 import Reglement from "./components/Reglement";
 import ListeDepenses from "./components/ListeDepenses";
@@ -55,6 +56,7 @@ export default function App() {
   const [theme, setTheme] = useState(getThemeInitial);
   const [messageVerification, setMessageVerification] = useState(null);
   const [bandeauEmailIgnore, setBandeauEmailIgnore] = useState(false);
+  const [afficherCalculette, setAfficherCalculette] = useState(false);
 
   useEffect(() => {
     const token = getVerificationDepuisUrl();
@@ -150,6 +152,10 @@ export default function App() {
             <span className="sidebar-utilisateur-nom">{utilisateur.nom}</span>
             <span className="sidebar-utilisateur-foyer">Foyer n°{utilisateur.foyer_id}</span>
           </div>
+          <button type="button" className="nav-item" onClick={() => setAfficherCalculette(true)}>
+            <Calculator size={17} strokeWidth={1.75} />
+            <span>Calculette</span>
+          </button>
           <button
             type="button"
             className={`nav-item${ongletActif === "compte" ? " nav-item-actif" : ""}`}
@@ -209,6 +215,8 @@ export default function App() {
           {ongletActif === "compte" && <Compte onCompteSupprime={handleCompteSupprime} />}
         </div>
       </main>
+
+      {afficherCalculette && <Calculette onFermer={() => setAfficherCalculette(false)} />}
     </div>
   );
 }

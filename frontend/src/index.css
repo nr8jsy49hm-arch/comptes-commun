@@ -1124,6 +1124,104 @@ button:disabled {
   margin: 8px 0;
 }
 
+/* ---------- Calculette ---------- */
+
+.calculette {
+  background: var(--color-paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  width: 100%;
+  max-width: 300px;
+  padding: 16px;
+}
+
+.calculette-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.calculette-header h3 {
+  margin: 0;
+}
+
+.calculette-affichage {
+  position: relative;
+  background: var(--color-parchment);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  padding: 16px 14px;
+  text-align: right;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  color: var(--color-ink);
+  margin-bottom: 12px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.calculette-copie {
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  color: var(--color-pine);
+}
+
+.calculette-grille {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.calculette-touche {
+  padding: 14px 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  box-shadow: none;
+  border: 1px solid var(--color-line);
+}
+
+.calculette-touche:hover:not(:disabled) {
+  background: var(--color-line);
+  color: var(--color-ink);
+  transform: none;
+  box-shadow: none;
+}
+
+.calculette-fonction {
+  color: var(--color-brick);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calculette-operateur {
+  background: var(--color-brass);
+  color: var(--color-paper);
+  border-color: var(--color-brass);
+}
+
+.calculette-operateur:hover {
+  background: var(--color-brass-dark);
+  color: var(--color-paper);
+}
+
+.calculette-egale {
+  background: var(--color-pine);
+  color: var(--color-paper);
+  border-color: var(--color-pine);
+}
+
+.calculette-egale:hover {
+  background: #2c4d42;
+  color: var(--color-paper);
+}
+
 /* ---------- Gestion des catégories ---------- */
 
 .gestion-categories ul {
