@@ -22,9 +22,9 @@ function getUtilisateurStocke() {
 
 // Ordre voulu : Solo → Commun (tableau de bord + dépenses) → Objectifs → Historique
 const ONGLETS = [
-  { id: "solo", label: "Solo", Icon: User },
+  { id: "solo", label: "Compte Perso", Icon: User },
   { id: "tableau", label: "Tableau de bord", Icon: Home },
-  { id: "depenses", label: "Dépenses", Icon: Wallet },
+  { id: "depenses", label: "Nos Dépenses", Icon: Wallet },
   { id: "objectifs", label: "Objectifs", Icon: Target },
   { id: "historique", label: "Historique", Icon: History },
 ];
