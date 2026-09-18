@@ -101,6 +101,22 @@ class Categorie(CategorieBase):
         from_attributes = True
 
 
+class EtiquetteBase(BaseModel):
+    nom: str
+
+
+class EtiquetteCreate(EtiquetteBase):
+    pass
+
+
+class Etiquette(EtiquetteBase):
+    id: int
+    foyer_id: int
+
+    class Config:
+        from_attributes = True
+
+
 class DepenseBase(BaseModel):
     montant: float
     date: date
@@ -111,15 +127,20 @@ class DepenseBase(BaseModel):
 
 
 class DepenseCreate(DepenseBase):
-    pass
+    etiquette_ids: list[int] = []
 
 
 class Depense(DepenseBase):
     id: int
     foyer_id: int
+    etiquettes: list[Etiquette] = []
 
     class Config:
         from_attributes = True
+
+
+class DepenseEtiquettesIn(BaseModel):
+    etiquette_ids: list[int]
 
 
 class ReglementBase(BaseModel):

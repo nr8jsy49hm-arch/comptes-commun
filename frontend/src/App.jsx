@@ -8,6 +8,7 @@ import DepenseForm from "./components/DepenseForm";
 import Reglement from "./components/Reglement";
 import ListeDepenses from "./components/ListeDepenses";
 import GestionCategories from "./components/GestionCategories";
+import GestionEtiquettes from "./components/GestionEtiquettes";
 import CleRepartition from "./components/CleRepartition";
 import Historique from "./components/Historique";
 import Objectifs from "./components/Objectifs";
@@ -206,6 +207,7 @@ export default function App() {
               <Reglement onReglementCree={() => setRefreshKey((k) => k + 1)} />
               <CleRepartition key={refreshKey} />
               <GestionCategories key={refreshKey} />
+              <GestionEtiquettes key={refreshKey} />
               <ListeDepenses key={refreshKey} />
             </>
           )}

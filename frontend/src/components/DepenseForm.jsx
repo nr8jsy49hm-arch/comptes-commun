@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { creerDepense, getCategories, creerCategorie, getMembresFoyer } from "../api";
+import { creerDepense, getCategories, creerCategorie, getMembresFoyer, getEtiquettes, creerEtiquette } from "../api";
 
 function getUtilisateurStocke() {
   const raw = localStorage.getItem("utilisateur");
@@ -16,6 +16,9 @@ export default function DepenseForm({ onDepenseCreee }) {
   const [categorieId, setCategorieId] = useState("");
   const [payeurId, setPayeurId] = useState(utilisateur?.id || "");
   const [nouvelleCategorie, setNouvelleCategorie] = useState("");
+  const [etiquettes, setEtiquettes] = useState([]);
+  const [etiquettesChoisies, setEtiquettesChoisies] = useState([]);
+  const [nouvelleEtiquette, setNouvelleEtiquette] = useState("");
 
   const chargerCategories = async () => {
     const res = await getCategories();
@@ -26,9 +29,16 @@ export default function DepenseForm({ onDepenseCreee }) {
     }
   };
 
+  const chargerEtiquettes = async () => {
+    const res = await getEtiquettes();
+    setEtiquettes(res.data);
+  };
+
   useEffect(() => {
     chargerCategories();
+    chargerEtiquettes();
     getMembresFoyer().then((res) => setMembres(res.data));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAjouterCategorie = async () => {
@@ -37,6 +47,20 @@ export default function DepenseForm({ onDepenseCreee }) {
     setNouvelleCategorie("");
     await chargerCategories();
     setCategorieId(res.data.id);
+  };
+
+  const handleToggleEtiquette = (id) => {
+    setEtiquettesChoisies((prev) =>
+      prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id]
+    );
+  };
+
+  const handleAjouterEtiquette = async () => {
+    if (!nouvelleEtiquette.trim()) return;
+    const res = await creerEtiquette(nouvelleEtiquette.trim());
+    setNouvelleEtiquette("");
+    await chargerEtiquettes();
+    setEtiquettesChoisies((prev) => [...prev, res.data.id]);
   };
 
   const handleSubmit = async (e) => {
@@ -48,9 +72,11 @@ export default function DepenseForm({ onDepenseCreee }) {
       note,
       categorie_id: categorieId,
       payeur_id: payeurId,
+      etiquette_ids: etiquettesChoisies,
     });
     setMontant("");
     setNote("");
+    setEtiquettesChoisies([]);
     onDepenseCreee?.();
   };
 
@@ -108,6 +134,33 @@ export default function DepenseForm({ onDepenseCreee }) {
           ))}
         </select>
       </label>
+
+      <div className="etiquettes-champ">
+        <span className="etiquettes-champ-titre">Étiquettes (optionnel)</span>
+        <div className="etiquettes-choix">
+          {etiquettes.map((et) => (
+            <button
+              type="button"
+              key={et.id}
+              className={`etiquette-pastille${etiquettesChoisies.includes(et.id) ? " etiquette-pastille-active" : ""}`}
+              onClick={() => handleToggleEtiquette(et.id)}
+            >
+              {et.nom}
+            </button>
+          ))}
+        </div>
+        <div className="ajout-categorie">
+          <input
+            type="text"
+            placeholder="Nouvelle étiquette..."
+            value={nouvelleEtiquette}
+            onChange={(e) => setNouvelleEtiquette(e.target.value)}
+          />
+          <button type="button" className="lien" onClick={handleAjouterEtiquette}>
+            + Ajouter étiquette
+          </button>
+        </div>
+      </div>
 
       <button type="submit">Ajouter</button>
     </form>

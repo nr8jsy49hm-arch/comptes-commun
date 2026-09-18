@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, DateTime, Boolean, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .database import Base
@@ -43,6 +43,23 @@ class Categorie(Base):
     depenses = relationship("Depense", back_populates="categorie")
 
 
+depense_etiquettes = Table(
+    "depense_etiquettes",
+    Base.metadata,
+    Column("depense_id", Integer, ForeignKey("depenses.id"), primary_key=True),
+    Column("etiquette_id", Integer, ForeignKey("etiquettes.id"), primary_key=True),
+)
+
+
+class Etiquette(Base):
+    """Étiquette libre (tag), réutilisable sur plusieurs dépenses, transversale aux catégories."""
+    __tablename__ = "etiquettes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nom = Column(String, nullable=False)
+    foyer_id = Column(Integer, ForeignKey("foyers.id"))
+
+
 class Depense(Base):
     __tablename__ = "depenses"
 
@@ -59,6 +76,7 @@ class Depense(Base):
     categorie = relationship("Categorie", back_populates="depenses")
     payeur = relationship("Utilisateur")
     foyer = relationship("Foyer", back_populates="depenses")
+    etiquettes = relationship("Etiquette", secondary=depense_etiquettes)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

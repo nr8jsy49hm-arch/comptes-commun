@@ -27,6 +27,7 @@ export default function TableauDepenses({
       payeur: payeursParId[d.payeur_id] || "",
       note: d.note || "",
       montant: d.montant,
+      etiquettes: d.etiquettes || [],
     }));
   }, [depenses, categoriesParId, payeursParId]);
 
@@ -92,7 +93,18 @@ export default function TableauDepenses({
                 </span>
               </td>
               {afficherPayeur && <td>{l.payeur}</td>}
-              <td className="tableau-note">{l.note}</td>
+              <td className="tableau-note">
+                {l.note}
+                {l.etiquettes.length > 0 && (
+                  <div className="tableau-etiquettes">
+                    {l.etiquettes.map((et) => (
+                      <span key={et.id} className="etiquette-pastille-mini">
+                        {et.nom}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </td>
               <td className="tableau-montant">{l.montant.toFixed(2)} €</td>
               {onSupprimer && (
                 <td>

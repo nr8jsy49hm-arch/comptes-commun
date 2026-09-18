@@ -127,6 +127,10 @@ $env:DATABASE_URL="<url-du-tunnel>"
 alembic upgrade head
 ```
 
+## Étiquettes libres
+
+En plus des catégories, des étiquettes libres transversales (ex : "Vacances Italie", "Travaux cuisine") permettent de regrouper des dépenses qui traversent plusieurs catégories. Choix multiple à la création d'une dépense (avec création à la volée), gestion (suppression) dans l'onglet Nos Dépenses, et filtre par étiquette dans la liste complète des dépenses. Relation many-to-many en base (une dépense peut avoir plusieurs étiquettes, une étiquette peut couvrir plusieurs dépenses).
+
 ## Comparaison de périodes
 
 Sur le Tableau de bord : le mois en cours comparé au mois précédent et au même mois l'an dernier, avec le delta en pourcentage (hausse en brique, baisse en vert). Réutilise les données déjà exposées par l'historique, aucun nouvel endpoint backend.

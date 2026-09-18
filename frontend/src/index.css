@@ -991,6 +991,114 @@ button:disabled {
   gap: 16px;
 }
 
+/* ---------- Étiquettes libres ---------- */
+
+.etiquettes-champ {
+  border-top: 1px dashed var(--color-line);
+  padding-top: 12px;
+  margin-top: 2px;
+}
+
+.etiquettes-champ-titre {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.etiquettes-choix {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.etiquette-pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-parchment);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  box-shadow: none;
+  font-weight: 500;
+}
+
+.etiquette-pastille:hover:not(:disabled) {
+  border-color: var(--color-brass);
+  color: var(--color-ink);
+  transform: none;
+  box-shadow: none;
+}
+
+.etiquette-pastille-active {
+  background: var(--color-brass);
+  border-color: var(--color-brass);
+  color: var(--color-paper);
+}
+
+.etiquette-pastille-active:hover {
+  background: var(--color-brass-dark);
+  color: var(--color-paper);
+}
+
+.etiquette-pastille-gestion {
+  cursor: default;
+}
+
+.etiquette-pastille-gestion button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: var(--color-ink-soft);
+  padding: 0;
+  display: flex;
+}
+
+.etiquette-pastille-gestion button:hover {
+  background: none;
+  color: var(--color-brick);
+  transform: none;
+  box-shadow: none;
+}
+
+.etiquette-pastille-mini {
+  display: inline-block;
+  background: var(--color-parchment);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 0.72rem;
+  color: var(--color-ink-soft);
+  margin: 3px 4px 0 0;
+}
+
+.tableau-etiquettes {
+  margin-top: 2px;
+}
+
+.liste-depenses-filtre {
+  margin-bottom: 16px;
+}
+
+.liste-depenses-filtre label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  font-weight: 400;
+  color: var(--color-ink);
+}
+
+.liste-depenses-filtre select {
+  width: auto;
+}
+
 /* ---------- Mon compte ---------- */
 
 .compte-section {

@@ -68,7 +68,8 @@ export const exporterMesDonnees = () =>
 
 // --- Dépenses / dashboard / répartition (foyer déduit du token, plus besoin de foyer_id) ---
 export const getDashboard = () => api.get("/dashboard/");
-export const getDepenses = () => api.get("/depenses/");
+export const getDepenses = (etiquetteId) =>
+  api.get("/depenses/", { params: etiquetteId ? { etiquette_id: etiquetteId } : {} });
 export const creerDepense = (depense) => api.post("/depenses/", depense);
 export const supprimerDepense = (id) => api.delete(`/depenses/${id}`);
 export const getBalance = () => api.get("/repartition/balance");
@@ -84,6 +85,13 @@ export const creerCategorie = (categorie) => api.post("/categories/", categorie)
 export const renommerCategorie = (id, nom) => api.patch(`/categories/${id}`, { nom });
 export const supprimerCategorie = (id) => api.delete(`/categories/${id}`);
 export const getMembresFoyer = () => api.get("/foyer/membres");
+
+// --- Étiquettes libres ---
+export const getEtiquettes = () => api.get("/etiquettes/");
+export const creerEtiquette = (nom) => api.post("/etiquettes/", { nom });
+export const supprimerEtiquette = (id) => api.delete(`/etiquettes/${id}`);
+export const modifierEtiquettesDepense = (depenseId, etiquette_ids) =>
+  api.patch(`/depenses/${depenseId}/etiquettes`, { etiquette_ids });
 
 // --- Invitations (rejoindre un foyer) ---
 export const creerInvitation = () => api.post("/foyer/invitations");

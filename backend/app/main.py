@@ -22,6 +22,7 @@ from .routers import (
     export,
     alertes,
     admin,
+    etiquettes,
 )
 
 logger = logging.getLogger("uvicorn.error")
@@ -84,6 +85,7 @@ app.include_router(solo.router)
 app.include_router(export.router)
 app.include_router(alertes.router)
 app.include_router(admin.router)
+app.include_router(etiquettes.router)
 
 
 @app.get("/")
