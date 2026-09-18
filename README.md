@@ -66,12 +66,6 @@ npm run dev
 
 Le frontend tourne sur `http://localhost:5173` et appelle l'API sur `http://localhost:8000`.
 
-## Ce qui manque encore (prochaines étapes)
-
-- Gestion avancée des catégories (édition, suppression depuis le frontend — la suppression existe déjà côté API).
-- Clé de répartition personnalisable (actuellement 50/50 fixe).
-- Migrations Alembic proprement configurées (pour l'instant les tables sont créées automatiquement au démarrage, avec une mini-migration manuelle pour la colonne `partagee`).
-
 ## Mode solo
 
 L'onglet Solo a maintenant la même richesse que les comptes communs : budget mensuel perso + reste à vivre, répartition par catégorie, et historique mois par mois / année par année — mais pas de règlement, puisque ça n'a pas de sens pour des dépenses qui n'engagent que soi.
@@ -102,7 +96,7 @@ L'onglet Solo a maintenant la même richesse que les comptes communs : budget me
 
 ## Tests automatisés
 
-Suite de tests pytest, isolée de la vraie base (utilise une base SQLite en mémoire, recréée à chaque test).
+Suite de tests pytest, isolée de la vraie base (utilise un fichier SQLite temporaire, recréé à chaque test).
 
 ```bash
 cd backend
@@ -112,19 +106,26 @@ pytest
 
 Couverture actuelle : inscription/connexion, mot de passe (changement, question secrète, réinitialisation), dépenses (création/suppression/isolation solo-commun), catégories (renommer, suppression bloquée si utilisée), budget et reste à vivre, répartition (50/50 par défaut, personnalisée, effet d'un règlement), objectifs d'épargne.
 
-## Migrations Alembic (structure posée, pas encore activée)
+## Migrations Alembic (activées)
 
-Alembic est en place (`alembic.ini`, `migrations/`) avec une migration `0001_baseline` qui décrit fidèlement le schéma actuel. **Le `Procfile` et `main.py` n'ont volontairement pas été changés pour l'instant** — la mini-migration manuelle continue de tourner comme avant, pour ne rien casser en prod.
+Le schéma de la base est géré par Alembic (`alembic.ini`, `migrations/`). Le `Procfile` exécute `alembic upgrade head` avant de démarrer le serveur à chaque déploiement — plus de migration manuelle dans `main.py`.
 
-La bascule complète (le `Procfile` lancera `alembic upgrade head` avant de démarrer le serveur, et `main.py` perdra son bloc de migration manuelle) se fera en deux temps, une fois que la base de production sera "calée" sur cette migration de référence sans la rejouer :
+Pour toute future modification de modèle (`app/models.py`), génère une nouvelle migration avant de pousser :
 
 ```bash
-# Depuis ton poste, avec l'URL publique PostgreSQL de Railway (onglet Connect du service Postgres)
-$env:DATABASE_URL="<url-postgres-publique-de-railway>"   # PowerShell
-alembic stamp 0001
+cd backend
+alembic revision --autogenerate -m "description du changement"
 ```
 
-Cette étape se fera ensemble avant de basculer le `Procfile`.
+Vérifie le fichier généré dans `migrations/versions/` (l'autogénération n'est pas toujours parfaite), puis committe-le avec le reste. Au déploiement suivant, Railway l'appliquera automatiquement via le `Procfile`.
+
+Pour appliquer une migration manuellement sur la base de production (rare — normalement automatique au déploiement), utilise le tunnel Railway :
+```bash
+railway connect Postgres --tunnel-only   # dans un premier terminal, à laisser ouvert
+# dans un second terminal, avec l'URL affichée par le tunnel :
+$env:DATABASE_URL="<url-du-tunnel>"
+alembic upgrade head
+```
 
 ## Sécurité
 

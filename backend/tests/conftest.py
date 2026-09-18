@@ -1,7 +1,7 @@
 import os
 
 import pytest
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
 
@@ -38,10 +38,6 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 def base_de_test():
     """Recrée un schéma propre avant chaque test, pour une isolation totale."""
     Base.metadata.create_all(bind=engine)
-    with engine.connect() as conn:
-        tables = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).fetchall()
-        print("\n[DIAGNOSTIC] Tables après create_all:", tables)
-        print("[DIAGNOSTIC] Chemin de la base:", engine.url)
     yield
     Base.metadata.drop_all(bind=engine)
 
