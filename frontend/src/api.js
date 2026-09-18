@@ -62,6 +62,10 @@ export const reinitialiserMotDePasse = (email, reponse, nouveau_mot_de_passe) =>
 export const verifierEmailToken = (token) => api.get(`/auth/verifier-email/${token}`);
 export const renvoyerVerificationEmail = () => api.post("/auth/renvoyer-verification");
 
+// --- RGPD ---
+export const exporterMesDonnees = () =>
+  telechargerFichier("/auth/exporter-mes-donnees", "mes-donnees-comptes-communs.json");
+
 // --- Dépenses / dashboard / répartition (foyer déduit du token, plus besoin de foyer_id) ---
 export const getDashboard = () => api.get("/dashboard/");
 export const getDepenses = () => api.get("/depenses/");

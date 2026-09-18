@@ -127,6 +127,13 @@ $env:DATABASE_URL="<url-du-tunnel>"
 alembic upgrade head
 ```
 
+## RGPD
+
+- **Export des données personnelles** : depuis "Mon compte" → "Exporter mes données", téléchargement d'un fichier JSON avec toutes les données rattachées au compte (profil, dépenses, budgets, règlements, invitations créées).
+- **CGU et politique de confidentialité** : brouillon accessible depuis l'inscription et "Mon compte". **⚠️ Ce sont des textes rédigés à titre indicatif — à faire relire et compléter par un professionnel du droit avant tout usage commercial réel** (identité de l'éditeur, adresse, email de contact à renseigner dans `frontend/src/components/LegalDocs.jsx`).
+- **Traçabilité du consentement** : la date d'acceptation des CGU est enregistrée à l'inscription (`cgu_acceptees_le`), et l'inscription est bloquée si la case n'est pas cochée.
+- Déjà couvert ailleurs : droit à l'effacement (suppression de compte), droit de rectification (modifiable dans l'appli).
+
 ## Sécurité
 
 - **Vérification d'email** : à l'inscription, un email de confirmation est envoyé (via Resend). Tant que l'email n'est pas confirmé, un bandeau discret le rappelle dans l'appli, avec un bouton pour renvoyer l'email. **Étapes pour l'activer** :

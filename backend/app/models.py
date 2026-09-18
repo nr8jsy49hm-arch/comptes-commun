@@ -26,6 +26,7 @@ class Utilisateur(Base):
     question_secrete = Column(String, nullable=True)
     reponse_secrete_hash = Column(String, nullable=True)
     email_verifie = Column(Boolean, nullable=False, default=False, server_default="true")
+    cgu_acceptees_le = Column(DateTime(timezone=True), nullable=True)
     foyer_id = Column(Integer, ForeignKey("foyers.id"))
 
     foyer = relationship("Foyer", back_populates="membres")

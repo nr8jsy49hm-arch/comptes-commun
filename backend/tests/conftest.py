@@ -58,7 +58,13 @@ def client():
 
 
 def inscrire(client, nom="Pierre", email="pierre@test.fr", mot_de_passe="motdepasse123", **kwargs):
-    payload = {"nom": nom, "email": email, "mot_de_passe": mot_de_passe, **kwargs}
+    payload = {
+        "nom": nom,
+        "email": email,
+        "mot_de_passe": mot_de_passe,
+        "cgu_acceptees": True,
+        **kwargs,
+    }
     res = client.post("/auth/register", json=payload)
     assert res.status_code == 200, res.text
     return res.json()

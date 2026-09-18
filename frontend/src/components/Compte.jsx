@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Copy, X } from "lucide-react";
+import { Copy, X, Download } from "lucide-react";
 import {
   changerMotDePasse,
   definirQuestionSecrete,
@@ -8,8 +8,10 @@ import {
   creerInvitation,
   listerInvitations,
   revoquerInvitation,
+  exporterMesDonnees,
   extraireErreur,
 } from "../api";
+import LegalDocs from "./LegalDocs";
 
 export default function Compte({ onCompteSupprime }) {
   // Notifications navigateur
@@ -42,6 +44,7 @@ export default function Compte({ onCompteSupprime }) {
   // Invitations pour rejoindre le foyer
   const [invitations, setInvitations] = useState([]);
   const [lienCopie, setLienCopie] = useState(false);
+  const [afficherLegal, setAfficherLegal] = useState(false);
 
   const chargerInvitations = () => listerInvitations().then((res) => setInvitations(res.data));
 
@@ -130,6 +133,23 @@ export default function Compte({ onCompteSupprime }) {
 
   return (
     <>
+      <div className="dashboard compte-section">
+        <h3>Mes données</h3>
+        <p className="compte-question-actuelle">
+          Conformément au RGPD, tu peux télécharger une copie de toutes tes données personnelles
+          à tout moment.
+        </p>
+        <div className="compte-rgpd-actions">
+          <button type="button" onClick={exporterMesDonnees}>
+            <Download size={14} strokeWidth={2} style={{ verticalAlign: -2, marginRight: 6 }} />
+            Exporter mes données
+          </button>
+          <button type="button" className="lien" onClick={() => setAfficherLegal(true)}>
+            Politique de confidentialité / CGU
+          </button>
+        </div>
+      </div>
+
       <div className="dashboard compte-section">
         <h3>Notifications</h3>
         <p className="compte-question-actuelle">
@@ -271,6 +291,8 @@ export default function Compte({ onCompteSupprime }) {
           </form>
         )}
       </div>
+
+      {afficherLegal && <LegalDocs onFermer={() => setAfficherLegal(false)} />}
     </>
   );
 }

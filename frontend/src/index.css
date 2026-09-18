@@ -997,6 +997,81 @@ button:disabled {
   border-bottom: none;
 }
 
+.compte-rgpd-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Documents légaux (modal) ---------- */
+
+.legal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.legal-modal {
+  background: var(--color-paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  max-width: 640px;
+  width: 100%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.legal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+  flex-shrink: 0;
+}
+
+.legal-avertissement {
+  background: rgba(156, 70, 48, 0.1);
+  color: var(--color-brick);
+  font-size: 0.82rem;
+  padding: 10px 20px;
+  margin: 12px 0 0;
+  flex-shrink: 0;
+}
+
+.legal-contenu {
+  padding: 16px 20px 24px;
+  overflow-y: auto;
+}
+
+.legal-contenu h3 {
+  margin-top: 0;
+}
+
+.legal-contenu h4 {
+  color: var(--color-ink);
+  margin-top: 20px;
+  margin-bottom: 6px;
+}
+
+.legal-contenu p,
+.legal-contenu li {
+  font-size: 0.88rem;
+  color: var(--color-ink-soft);
+}
+
+.legal-contenu ul {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+
 /* ---------- Gestion des catégories ---------- */
 
 .gestion-categories ul {

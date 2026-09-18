@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta, timezone
@@ -76,6 +77,7 @@ def register(request: Request, payload: schemas.UtilisateurCreate, db: Session =
         reponse_secrete_hash=hash_password(payload.reponse_secrete.strip().lower())
         if payload.reponse_secrete
         else None,
+        cgu_acceptees_le=datetime.now(timezone.utc),
     )
     db.add(utilisateur)
 
@@ -204,6 +206,88 @@ def reinitialiser_mot_de_passe(
     utilisateur.mot_de_passe_hash = hash_password(payload.nouveau_mot_de_passe)
     db.commit()
     return {"ok": True}
+
+
+@router.get("/exporter-mes-donnees")
+def exporter_mes_donnees(
+    db: Session = Depends(get_db),
+    current_user: models.Utilisateur = Depends(get_current_user),
+):
+    """Export RGPD : toutes les données personnelles rattachées à ce compte, en JSON téléchargeable."""
+    depenses_communes_payees = (
+        db.query(models.Depense)
+        .filter(models.Depense.payeur_id == current_user.id, models.Depense.partagee == True)
+        .all()
+    )
+    depenses_personnelles = (
+        db.query(models.Depense)
+        .filter(models.Depense.payeur_id == current_user.id, models.Depense.partagee == False)
+        .all()
+    )
+    budgets_personnels = (
+        db.query(models.BudgetPersonnel).filter(models.BudgetPersonnel.utilisateur_id == current_user.id).all()
+    )
+    reglements = (
+        db.query(models.Reglement)
+        .filter(
+            (models.Reglement.de_utilisateur_id == current_user.id)
+            | (models.Reglement.vers_utilisateur_id == current_user.id)
+        )
+        .all()
+    )
+    invitations_creees = (
+        db.query(models.Invitation).filter(models.Invitation.cree_par_id == current_user.id).all()
+    )
+
+    def _depense_dict(d):
+        return {
+            "id": d.id,
+            "montant": d.montant,
+            "date": d.date.isoformat(),
+            "note": d.note,
+            "categorie_id": d.categorie_id,
+            "partagee": d.partagee,
+        }
+
+    contenu = {
+        "compte": {
+            "id": current_user.id,
+            "nom": current_user.nom,
+            "email": current_user.email,
+            "foyer_id": current_user.foyer_id,
+            "email_verifie": current_user.email_verifie,
+            "question_secrete_definie": current_user.question_secrete is not None,
+            "cgu_acceptees_le": current_user.cgu_acceptees_le.isoformat() if current_user.cgu_acceptees_le else None,
+        },
+        "depenses_communes_que_jai_payees": [_depense_dict(d) for d in depenses_communes_payees],
+        "depenses_personnelles": [_depense_dict(d) for d in depenses_personnelles],
+        "budgets_personnels": [
+            {"id": b.id, "mois": b.mois.isoformat(), "montant": b.montant} for b in budgets_personnels
+        ],
+        "reglements": [
+            {
+                "id": r.id,
+                "montant": r.montant,
+                "date": r.date.isoformat(),
+                "de_utilisateur_id": r.de_utilisateur_id,
+                "vers_utilisateur_id": r.vers_utilisateur_id,
+            }
+            for r in reglements
+        ],
+        "invitations_creees": [
+            {
+                "id": i.id,
+                "expire_le": i.expire_le.isoformat(),
+                "utilisee_le": i.utilisee_le.isoformat() if i.utilisee_le else None,
+            }
+            for i in invitations_creees
+        ],
+    }
+
+    return JSONResponse(
+        content=contenu,
+        headers={"Content-Disposition": "attachment; filename=mes-donnees-comptes-communs.json"},
+    )
 
 
 @router.delete("/compte")

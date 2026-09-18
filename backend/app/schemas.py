@@ -19,8 +19,16 @@ class UtilisateurCreate(BaseModel):
     invitation_token: Optional[str] = None  # jeton d'invitation pour rejoindre un foyer existant
     question_secrete: Optional[str] = None
     reponse_secrete: Optional[str] = None
+    cgu_acceptees: bool = False
 
     _valider_mdp = field_validator("mot_de_passe")(_valider_longueur_mot_de_passe)
+
+    @field_validator("cgu_acceptees")
+    @classmethod
+    def _valider_cgu(cls, v: bool) -> bool:
+        if not v:
+            raise ValueError("Tu dois accepter les CGU et la politique de confidentialité pour créer un compte")
+        return v
 
 
 class UtilisateurLogin(BaseModel):

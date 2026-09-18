@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { register, verifierInvitation, extraireErreur } from "../api";
+import LegalDocs from "./LegalDocs";
 
 export default function Register({ onInscrit, onAllerConnexion, invitationToken }) {
   const [nom, setNom] = useState("");
@@ -11,6 +12,8 @@ export default function Register({ onInscrit, onAllerConnexion, invitationToken 
   const [infoInvitation, setInfoInvitation] = useState(null); // { valide, nom_foyer }
   const [questionSecrete, setQuestionSecrete] = useState("");
   const [reponseSecrete, setReponseSecrete] = useState("");
+  const [cguAcceptees, setCguAcceptees] = useState(false);
+  const [afficherLegal, setAfficherLegal] = useState(false);
   const [erreur, setErreur] = useState("");
 
   useEffect(() => {
@@ -37,6 +40,7 @@ export default function Register({ onInscrit, onAllerConnexion, invitationToken 
         ...(questionSecrete && reponseSecrete
           ? { question_secrete: questionSecrete, reponse_secrete: reponseSecrete }
           : {}),
+        cgu_acceptees: cguAcceptees,
       };
       const res = await register(payload);
       localStorage.setItem("token", res.data.access_token);
@@ -147,6 +151,19 @@ export default function Register({ onInscrit, onAllerConnexion, invitationToken 
         />
       )}
 
+      <label className="compte-notif-toggle">
+        <input
+          type="checkbox"
+          checked={cguAcceptees}
+          onChange={(e) => setCguAcceptees(e.target.checked)}
+          required
+        />
+        J'accepte les{" "}
+        <button type="button" className="lien" onClick={() => setAfficherLegal(true)}>
+          CGU et la politique de confidentialité
+        </button>
+      </label>
+
       <button type="submit" disabled={mode === "rejoindre" && infoInvitation && !infoInvitation.valide}>
         S'inscrire
       </button>
@@ -156,6 +173,7 @@ export default function Register({ onInscrit, onAllerConnexion, invitationToken 
           Se connecter
         </button>
       </p>
+      {afficherLegal && <LegalDocs onFermer={() => setAfficherLegal(false)} />}
     </form>
   );
 }

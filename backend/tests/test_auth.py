@@ -56,6 +56,7 @@ def test_rejoindre_foyer_via_invitation(client):
             "email": "intrus@test.fr",
             "mot_de_passe": "motdepasse123",
             "invitation_token": token,
+            "cgu_acceptees": True,
         },
     )
     assert res.status_code == 400
@@ -159,3 +160,36 @@ def test_renvoyer_verification(client):
     res = client.post("/auth/renvoyer-verification", headers=headers)
     assert res.status_code == 200
     assert res.json()["deja_verifie"] is False
+
+
+def test_inscription_sans_accepter_cgu_refusee(client):
+    res = client.post(
+        "/auth/register",
+        json={
+            "nom": "Pierre",
+            "email": "pierre@test.fr",
+            "mot_de_passe": "motdepasse123",
+            "cgu_acceptees": False,
+        },
+    )
+    assert res.status_code == 422
+
+
+def test_export_rgpd(client):
+    data = inscrire(client)
+    headers = entetes_auth(data["access_token"])
+    payeur_id = data["utilisateur"]["id"]
+
+    cat = client.post("/categories/", json={"nom": "Courses"}, headers=headers).json()
+    client.post(
+        "/depenses/",
+        json={"montant": 15, "date": "2026-06-01", "categorie_id": cat["id"], "payeur_id": payeur_id},
+        headers=headers,
+    )
+
+    res = client.get("/auth/exporter-mes-donnees", headers=headers)
+    assert res.status_code == 200
+    export = res.json()
+    assert export["compte"]["email"] == "pierre@test.fr"
+    assert len(export["depenses_communes_que_jai_payees"]) == 1
+    assert export["depenses_communes_que_jai_payees"][0]["montant"] == 15
