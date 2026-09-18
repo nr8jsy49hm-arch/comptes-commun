@@ -115,3 +115,47 @@ def test_question_secrete_et_reinitialisation(client):
 
     res = client.post("/auth/login", data={"username": "pierre@test.fr", "password": "autremdp789"})
     assert res.status_code == 200
+
+
+def test_verification_email(client):
+    from .conftest import TestingSessionLocal
+    from app import models
+
+    data = inscrire(client)
+    headers = entetes_auth(data["access_token"])
+
+    # Fraîchement inscrit : email pas encore confirmé
+    assert data["utilisateur"]["email_verifie"] is False
+    me = client.get("/auth/me", headers=headers).json()
+    assert me["email_verifie"] is False
+
+    # Récupère le jeton généré à l'inscription (normalement reçu par email)
+    db = TestingSessionLocal()
+    verification = (
+        db.query(models.VerificationEmail)
+        .filter(models.VerificationEmail.utilisateur_id == data["utilisateur"]["id"])
+        .first()
+    )
+    token = verification.token
+    db.close()
+
+    res = client.get(f"/auth/verifier-email/{token}")
+    assert res.json()["reussi"] is True
+
+    me = client.get("/auth/me", headers=headers).json()
+    assert me["email_verifie"] is True
+
+    # Un jeton déjà utilisé ou inconnu ne casse rien, reste informatif
+    res = client.get(f"/auth/verifier-email/{token}")
+    assert res.json()["reussi"] is True
+    res = client.get("/auth/verifier-email/jeton-inconnu")
+    assert res.json()["reussi"] is False
+
+
+def test_renvoyer_verification(client):
+    data = inscrire(client)
+    headers = entetes_auth(data["access_token"])
+
+    res = client.post("/auth/renvoyer-verification", headers=headers)
+    assert res.status_code == 200
+    assert res.json()["deja_verifie"] is False

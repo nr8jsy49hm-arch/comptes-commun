@@ -2,15 +2,19 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+import secrets
 
 from .. import models, schemas
 from ..database import get_db
 from ..security import hash_password, verify_password, create_access_token
 from ..deps import get_current_user
 from ..limiter import limiter
+from ..email import envoyer_email_verification
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+DUREE_VALIDITE_VERIFICATION = timedelta(hours=24)
 
 
 @router.get("/invitations/{token}", response_model=schemas.InvitationInfo)
@@ -21,6 +25,18 @@ def verifier_invitation(token: str, db: Session = Depends(get_db)):
         return schemas.InvitationInfo(valide=False)
     foyer = db.query(models.Foyer).filter(models.Foyer.id == invitation.foyer_id).first()
     return schemas.InvitationInfo(valide=True, nom_foyer=foyer.nom if foyer else None)
+
+
+def _creer_et_envoyer_verification(db: Session, utilisateur: models.Utilisateur) -> None:
+    token = secrets.token_urlsafe(32)
+    verification = models.VerificationEmail(
+        token=token,
+        utilisateur_id=utilisateur.id,
+        expire_le=datetime.now(timezone.utc) + DUREE_VALIDITE_VERIFICATION,
+    )
+    db.add(verification)
+    db.commit()
+    envoyer_email_verification(utilisateur.email, utilisateur.nom, token)
 
 
 @router.post("/register", response_model=schemas.Token)
@@ -69,6 +85,8 @@ def register(request: Request, payload: schemas.UtilisateurCreate, db: Session =
     db.commit()
     db.refresh(utilisateur)
 
+    _creer_et_envoyer_verification(db, utilisateur)
+
     token = create_access_token({"sub": str(utilisateur.id)})
     return schemas.Token(access_token=token, utilisateur=utilisateur)
 
@@ -88,6 +106,42 @@ def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db
 @router.get("/me", response_model=schemas.UtilisateurOut)
 def me(current_user: models.Utilisateur = Depends(get_current_user)):
     return current_user
+
+
+@router.get("/verifier-email/{token}", response_model=schemas.VerificationEmailResultat)
+def verifier_email(token: str, db: Session = Depends(get_db)):
+    """Route publique : confirme l'adresse email à partir du jeton reçu par mail."""
+    verification = db.query(models.VerificationEmail).filter(models.VerificationEmail.token == token).first()
+    if not verification:
+        return schemas.VerificationEmailResultat(reussi=False, message="Lien de vérification invalide.")
+    if verification.verifiee_le:
+        return schemas.VerificationEmailResultat(reussi=True, message="Cet email était déjà confirmé.")
+    if verification.expire_le < datetime.now(timezone.utc):
+        return schemas.VerificationEmailResultat(
+            reussi=False, message="Ce lien a expiré — demande un nouvel envoi depuis Mon compte."
+        )
+
+    utilisateur = db.query(models.Utilisateur).filter(models.Utilisateur.id == verification.utilisateur_id).first()
+    if not utilisateur:
+        return schemas.VerificationEmailResultat(reussi=False, message="Compte introuvable.")
+
+    utilisateur.email_verifie = True
+    verification.verifiee_le = datetime.now(timezone.utc)
+    db.commit()
+    return schemas.VerificationEmailResultat(reussi=True, message="Email confirmé, merci !")
+
+
+@router.post("/renvoyer-verification")
+@limiter.limit("3/minute")
+def renvoyer_verification(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: models.Utilisateur = Depends(get_current_user),
+):
+    if current_user.email_verifie:
+        return {"ok": True, "deja_verifie": True}
+    _creer_et_envoyer_verification(db, current_user)
+    return {"ok": True, "deja_verifie": False}
 
 
 @router.post("/mot-de-passe")

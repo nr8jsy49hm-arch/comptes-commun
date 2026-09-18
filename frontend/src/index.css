@@ -1052,6 +1052,12 @@ button:disabled {
   font-size: 0.88rem;
 }
 
+.alerte-item.alerte-info {
+  background: rgba(176, 133, 73, 0.1);
+  border-color: rgba(176, 133, 73, 0.3);
+  color: var(--color-brass-dark);
+}
+
 .alerte-item span {
   flex: 1;
 }

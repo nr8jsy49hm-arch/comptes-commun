@@ -11,5 +11,6 @@ python-multipart==0.0.9
 python-dotenv==1.0.1
 alembic==1.13.2
 slowapi==0.1.9
+requests==2.32.3
 
 # Dépendances de développement (tests) — voir requirements-dev.txt

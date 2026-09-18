@@ -14,6 +14,8 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import MotDePasseOublie from "./components/MotDePasseOublie";
 import NotificationsBanner from "./components/NotificationsBanner";
+import EmailVerificationBanner from "./components/EmailVerificationBanner";
+import { verifierEmailToken, getMe } from "./api";
 
 function getUtilisateurStocke() {
   const raw = localStorage.getItem("utilisateur");
@@ -39,6 +41,10 @@ function getInvitationDepuisUrl() {
   return new URLSearchParams(window.location.search).get("invite");
 }
 
+function getVerificationDepuisUrl() {
+  return new URLSearchParams(window.location.search).get("verify");
+}
+
 export default function App() {
   const [utilisateur, setUtilisateur] = useState(getUtilisateurStocke());
   const [invitationToken] = useState(getInvitationDepuisUrl);
@@ -46,6 +52,26 @@ export default function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [ongletActif, setOngletActif] = useState("solo");
   const [theme, setTheme] = useState(getThemeInitial);
+  const [messageVerification, setMessageVerification] = useState(null);
+  const [bandeauEmailIgnore, setBandeauEmailIgnore] = useState(false);
+
+  useEffect(() => {
+    const token = getVerificationDepuisUrl();
+    if (!token) return;
+    verifierEmailToken(token).then((res) => {
+      setMessageVerification(res.data);
+      // Nettoie l'URL pour ne pas re-déclencher la vérification à chaque rechargement
+      window.history.replaceState({}, "", window.location.pathname);
+      // Si on est déjà connecté (même personne), rafraîchit son statut affiché
+      if (localStorage.getItem("token")) {
+        getMe().then((meRes) => {
+          const maj = { ...getUtilisateurStocke(), email_verifie: meRes.data.email_verifie };
+          localStorage.setItem("utilisateur", JSON.stringify(maj));
+          setUtilisateur(maj);
+        });
+      }
+    });
+  }, []);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -68,6 +94,11 @@ export default function App() {
     return (
       <div className="app app-auth">
         <h1>Comptes Communs</h1>
+        {messageVerification && (
+          <p className={messageVerification.reussi ? "compte-message-ok" : "auth-erreur"}>
+            {messageVerification.message}
+          </p>
+        )}
         {ecranAuth === "login" && (
           <Login
             onConnecte={setUtilisateur}
@@ -143,6 +174,12 @@ export default function App() {
         </header>
 
         <NotificationsBanner />
+        {!bandeauEmailIgnore && (
+          <EmailVerificationBanner
+            utilisateur={utilisateur}
+            onIgnorer={() => setBandeauEmailIgnore(true)}
+          />
+        )}
 
         <div className="contenu-page" key={ongletActif}>
           {ongletActif === "solo" && <SoloDepenses />}

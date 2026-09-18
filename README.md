@@ -129,6 +129,13 @@ alembic upgrade head
 
 ## Sécurité
 
+- **Vérification d'email** : à l'inscription, un email de confirmation est envoyé (via Resend). Tant que l'email n'est pas confirmé, un bandeau discret le rappelle dans l'appli, avec un bouton pour renvoyer l'email. **Étapes pour l'activer** :
+  1. Crée un compte gratuit sur [resend.com](https://resend.com) (100 emails/jour, 3000/mois).
+  2. Génère une clé API (Dashboard → API Keys → Create).
+  3. Sur Railway, backend → Variables, ajoute `RESEND_API_KEY` avec cette clé, et `FRONTEND_URL` = `https://comptes-commun.vercel.app`.
+  4. **Limite du mode gratuit sans domaine vérifié** : Resend n'autorise l'envoi qu'à l'adresse email de ton propre compte Resend (protection anti-spam standard). Concrètement, tant que tu n'as pas vérifié un nom de domaine sur Resend, seul ton email à toi recevra réellement les emails — celui d'Orléanes ne recevra rien, même si le compte se crée normalement. Pour débloquer l'envoi à tout le monde, il faut acheter un nom de domaine et le vérifier dans Resend (Domains → Add Domain), puis définir `RESEND_FROM_EMAIL` avec une adresse de ce domaine.
+  5. Si `RESEND_API_KEY` n'est pas configurée du tout, l'inscription fonctionne quand même normalement — l'email est juste silencieusement non envoyé (visible dans les logs Railway), rien ne casse.
+
 - **Limitation de débit (anti brute-force)** : connexion (10/min), inscription et mot de passe oublié (5/min chacune) par adresse IP, via `slowapi`. Au-delà, l'API renvoie une erreur 429.
 - **Mot de passe minimum 8 caractères**, imposé côté serveur (Pydantic) à l'inscription, au changement de mot de passe et à la réinitialisation — pas seulement une suggestion côté frontend.
 - **En-têtes de sécurité HTTP** : `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` ajoutés à chaque réponse.

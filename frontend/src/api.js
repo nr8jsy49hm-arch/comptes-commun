@@ -58,6 +58,10 @@ export const demanderQuestionSecrete = (email) =>
 export const reinitialiserMotDePasse = (email, reponse, nouveau_mot_de_passe) =>
   api.post("/auth/mot-de-passe-oublie/reinitialiser", { email, reponse, nouveau_mot_de_passe });
 
+// --- Vérification d'email ---
+export const verifierEmailToken = (token) => api.get(`/auth/verifier-email/${token}`);
+export const renvoyerVerificationEmail = () => api.post("/auth/renvoyer-verification");
+
 // --- Dépenses / dashboard / répartition (foyer déduit du token, plus besoin de foyer_id) ---
 export const getDashboard = () => api.get("/dashboard/");
 export const getDepenses = () => api.get("/depenses/");

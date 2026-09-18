@@ -33,6 +33,7 @@ class UtilisateurOut(BaseModel):
     nom: str
     email: str
     foyer_id: int
+    email_verifie: bool = True
 
     class Config:
         from_attributes = True
@@ -250,3 +251,8 @@ class InvitationInfo(BaseModel):
     """Réponse publique (avant inscription) : le strict nécessaire pour afficher l'écran de rejoindre."""
     valide: bool
     nom_foyer: Optional[str] = None
+
+
+class VerificationEmailResultat(BaseModel):
+    reussi: bool
+    message: str

@@ -25,6 +25,7 @@ class Utilisateur(Base):
     mot_de_passe_hash = Column(String, nullable=False)
     question_secrete = Column(String, nullable=True)
     reponse_secrete_hash = Column(String, nullable=True)
+    email_verifie = Column(Boolean, nullable=False, default=False, server_default="true")
     foyer_id = Column(Integer, ForeignKey("foyers.id"))
 
     foyer = relationship("Foyer", back_populates="membres")
@@ -143,4 +144,16 @@ class Invitation(Base):
     cree_par_id = Column(Integer, ForeignKey("utilisateurs.id"))
     expire_le = Column(DateTime(timezone=True), nullable=False)
     utilisee_le = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class VerificationEmail(Base):
+    """Jeton de vérification d'adresse email, envoyé par email à l'inscription (ou au renvoi)."""
+    __tablename__ = "verifications_email"
+
+    id = Column(Integer, primary_key=True, index=True)
+    token = Column(String, unique=True, nullable=False, index=True)
+    utilisateur_id = Column(Integer, ForeignKey("utilisateurs.id"))
+    expire_le = Column(DateTime(timezone=True), nullable=False)
+    verifiee_le = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
