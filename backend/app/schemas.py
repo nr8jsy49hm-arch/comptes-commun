@@ -153,7 +153,7 @@ class CleRepartitionIn(BaseModel):
 
 
 class CleRepartitionOut(BaseModel):
-    type: str  # "50_50" ou "personnalisee"
+    type: str  # "equirepartition" ou "personnalisee"
     parts: dict[int, float]
 
 

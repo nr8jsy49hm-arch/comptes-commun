@@ -127,6 +127,15 @@ $env:DATABASE_URL="<url-du-tunnel>"
 alembic upgrade head
 ```
 
+## Foyers à plus de 2 personnes
+
+L'appli n'est plus limitée à un couple : un foyer peut compter autant de membres que nécessaire (colocs, famille...).
+
+- **Rejoindre à plusieurs** : génère une invitation par nouvelle personne depuis "Mon compte" (chaque lien est à usage unique).
+- **Répartition** : par défaut, les dépenses communes sont partagées à parts égales entre tous les membres (100/N chacun). La clé personnalisée (onglet Nos Dépenses) affiche désormais un champ pourcentage par membre plutôt qu'un simple curseur à deux, avec vérification que le total fait bien 100%.
+- **Règlements** : quand il y a plus de deux membres, un menu déroulant permet de choisir à qui on rembourse ; l'historique précise toujours qui a payé qui.
+- Tout le reste (dépenses, catégories, budgets, objectifs) fonctionnait déjà pour N personnes sans changement — seule la logique de répartition/règlement était câblée pour exactement deux.
+
 ## RGPD
 
 - **Export des données personnelles** : depuis "Mon compte" → "Exporter mes données", téléchargement d'un fichier JSON avec toutes les données rattachées au compte (profil, dépenses, budgets, règlements, invitations créées).

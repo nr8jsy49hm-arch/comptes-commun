@@ -3,30 +3,37 @@ import { getMembresFoyer, getCleRepartition, definirCleRepartition, reinitialise
 
 export default function CleRepartition() {
   const [membres, setMembres] = useState([]);
-  const [type, setType] = useState("50_50");
-  const [partU1, setPartU1] = useState(50);
+  const [type, setType] = useState("equirepartition");
+  const [parts, setParts] = useState({}); // { utilisateur_id: pourcentage }
   const [enregistre, setEnregistre] = useState(false);
+  const [erreur, setErreur] = useState("");
 
   const charger = async () => {
     const [membresRes, cleRes] = await Promise.all([getMembresFoyer(), getCleRepartition()]);
     setMembres(membresRes.data);
     setType(cleRes.data.type);
-    if (membresRes.data.length === 2) {
-      setPartU1(cleRes.data.parts[membresRes.data[0].id] ?? 50);
-    }
+    setParts(cleRes.data.parts);
   };
 
   useEffect(() => {
     charger();
   }, []);
 
-  if (membres.length !== 2) return null;
+  if (membres.length < 2) return null;
 
-  const [u1, u2] = membres;
-  const partU2 = 100 - partU1;
+  const total = Object.values(parts).reduce((acc, v) => acc + Number(v || 0), 0);
+
+  const handleChangerPart = (id, valeur) => {
+    setParts((p) => ({ ...p, [id]: valeur === "" ? "" : Number(valeur) }));
+  };
 
   const handleEnregistrer = async () => {
-    await definirCleRepartition({ [u1.id]: partU1, [u2.id]: partU2 });
+    setErreur("");
+    if (Math.abs(total - 100) > 0.5) {
+      setErreur(`Les parts doivent totaliser 100% (actuellement ${total.toFixed(0)}%).`);
+      return;
+    }
+    await definirCleRepartition(parts);
     setType("personnalisee");
     setEnregistre(true);
     setTimeout(() => setEnregistre(false), 2000);
@@ -34,33 +41,42 @@ export default function CleRepartition() {
 
   const handleReinitialiser = async () => {
     await reinitialiserCleRepartition();
-    setPartU1(50);
-    setType("50_50");
+    await charger();
   };
 
   return (
     <div className="dashboard cle-repartition">
       <h3>Clé de répartition</h3>
       <p className="cle-repartition-intro">
-        Par défaut, les dépenses communes sont partagées 50/50. Tu peux ajuster la proportion
-        de chacun ci-dessous.
+        Par défaut, les dépenses communes sont partagées à parts égales entre les{" "}
+        {membres.length} membres du foyer ({(100 / membres.length).toFixed(0)}% chacun). Tu peux
+        ajuster la proportion de chacun ci-dessous.
       </p>
 
-      <div className="cle-repartition-labels">
-        <span>{u1.nom} — {partU1.toFixed(0)}%</span>
-        <span>{u2.nom} — {partU2.toFixed(0)}%</span>
+      {erreur && <p className="auth-erreur">{erreur}</p>}
+
+      <div className="cle-repartition-liste">
+        {membres.map((m) => (
+          <label key={m.id} className="cle-repartition-ligne">
+            <span>{m.nom}</span>
+            <span className="cle-repartition-input-pct">
+              <input
+                type="number"
+                min="0"
+                max="100"
+                step="1"
+                value={parts[m.id] ?? ""}
+                onChange={(e) => handleChangerPart(m.id, e.target.value)}
+              />
+              %
+            </span>
+          </label>
+        ))}
       </div>
 
-      <input
-        type="range"
-        min="0"
-        max="100"
-        step="1"
-        value={partU1}
-        onChange={(e) => setPartU1(Number(e.target.value))}
-        className="cle-repartition-curseur"
-        style={{ "--valeur": `${partU1}%` }}
-      />
+      <p className={`cle-repartition-total${Math.abs(total - 100) > 0.5 ? " cle-repartition-total-erreur" : ""}`}>
+        Total : {total.toFixed(0)}%
+      </p>
 
       <div className="cle-repartition-actions">
         <button type="button" onClick={handleEnregistrer}>
@@ -68,7 +84,7 @@ export default function CleRepartition() {
         </button>
         {type === "personnalisee" && (
           <button type="button" className="lien" onClick={handleReinitialiser}>
-            Revenir au 50/50
+            Revenir à parts égales
           </button>
         )}
       </div>

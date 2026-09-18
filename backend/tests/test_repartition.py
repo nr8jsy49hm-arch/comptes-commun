@@ -61,7 +61,7 @@ def test_reinitialiser_cle_repartition(client):
     assert res.status_code == 200
 
     cle = client.get("/repartition/cle", headers=headers_pierre).json()
-    assert cle["type"] == "50_50"
+    assert cle["type"] == "equirepartition"
 
 
 def test_reglement_ajuste_la_balance(client):
@@ -83,3 +83,45 @@ def test_reglement_ajuste_la_balance(client):
     balance = {b["utilisateur_id"]: b["solde"] for b in client.get("/repartition/balance", headers=headers_pierre).json()}
     assert balance[pid] == 0.0
     assert balance[oid] == 0.0
+
+
+def test_balance_foyer_a_trois(client):
+    pierre = inscrire(client, nom="Pierre", email="pierre@test.fr")
+    foyer_id = pierre["utilisateur"]["foyer_id"]
+    headers_pierre = entetes_auth(pierre["access_token"])
+
+    inv1 = client.post("/foyer/invitations", headers=headers_pierre).json()
+    orleanes = inscrire(client, nom="Orléanes", email="orleanes@test.fr", invitation_token=inv1["token"])
+
+    inv2 = client.post("/foyer/invitations", headers=headers_pierre).json()
+    coloc = inscrire(client, nom="Coloc", email="coloc@test.fr", invitation_token=inv2["token"])
+
+    pid = pierre["utilisateur"]["id"]
+    oid = orleanes["utilisateur"]["id"]
+    cid = coloc["utilisateur"]["id"]
+
+    cat = client.post("/categories/", json={"nom": "Courses"}, headers=headers_pierre).json()
+    # Pierre paie 90€ pour les trois -> chacun doit 30€ (équirépartition par défaut)
+    client.post(
+        "/depenses/",
+        json={"montant": 90, "date": date.today().isoformat(), "categorie_id": cat["id"], "payeur_id": pid},
+        headers=headers_pierre,
+    )
+
+    balance = {b["utilisateur_id"]: b["solde"] for b in client.get("/repartition/balance", headers=headers_pierre).json()}
+    assert balance[pid] == 60.0  # a payé 90, sa part est 30 -> on lui doit 60
+    assert balance[oid] == -30.0
+    assert balance[cid] == -30.0
+
+    # Répartition personnalisée à trois : 50 / 30 / 20
+    res = client.post(
+        "/repartition/cle",
+        json={"parts": {str(pid): 50, str(oid): 30, str(cid): 20}},
+        headers=headers_pierre,
+    )
+    assert res.status_code == 200
+
+    balance = {b["utilisateur_id"]: b["solde"] for b in client.get("/repartition/balance", headers=headers_pierre).json()}
+    assert balance[pid] == 45.0  # payé 90, part 45 (50% de 90)
+    assert balance[oid] == -27.0  # part 27 (30%)
+    assert balance[cid] == -18.0  # part 18 (20%)
