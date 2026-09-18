@@ -51,10 +51,10 @@ L'API tourne sur `http://localhost:8000` (doc interactive auto sur `/docs`).
 
 Le flux est le suivant :
 1. **Le premier des deux s'inscrit** (`Créer un nouveau foyer`) — ça crée à la fois son compte et le foyer.
-2. Une fois connecté, son **numéro de foyer** s'affiche en haut de l'écran (`Foyer n°X`).
-3. **Le/la partenaire s'inscrit à son tour** en choisissant `Rejoindre un foyer existant` et en renseignant ce numéro.
+2. Une fois connecté, il va dans **Mon compte → Inviter quelqu'un dans le foyer** et génère un lien d'invitation (jeton aléatoire, valable 7 jours, à usage unique).
+3. **Le/la partenaire ouvre ce lien** (`.../?invite=<jeton>`) — l'appli détecte automatiquement le jeton, affiche le nom du foyer à rejoindre, et pré-remplit l'inscription.
 
-Les deux comptes sont alors rattachés au même foyer, et toutes les dépenses/balances sont automatiquement partagées entre eux — plus besoin d'insérer quoi que ce soit à la main en base.
+Les deux comptes sont alors rattachés au même foyer, et toutes les dépenses/balances sont automatiquement partagées entre eux. Ce système remplace l'ancien numéro de foyer (`code_foyer`), qui était un simple entier devinable — inadapté dès qu'il y a des utilisateurs qu'on ne connaît pas personnellement.
 
 ## Lancer le frontend
 

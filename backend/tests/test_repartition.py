@@ -5,8 +5,11 @@ from .conftest import inscrire, entetes_auth
 def _foyer_a_deux(client):
     pierre = inscrire(client, nom="Pierre", email="pierre@test.fr")
     foyer_id = pierre["utilisateur"]["foyer_id"]
-    orleanes = inscrire(client, nom="Orléanes", email="orleanes@test.fr", code_foyer=foyer_id)
     headers_pierre = entetes_auth(pierre["access_token"])
+    invitation = client.post("/foyer/invitations", headers=headers_pierre).json()
+    orleanes = inscrire(
+        client, nom="Orléanes", email="orleanes@test.fr", invitation_token=invitation["token"]
+    )
     headers_orleanes = entetes_auth(orleanes["access_token"])
     cat = client.post("/categories/", json={"nom": "Courses"}, headers=headers_pierre).json()
     return pierre, orleanes, headers_pierre, headers_orleanes, cat

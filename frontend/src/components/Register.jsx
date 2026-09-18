@@ -1,16 +1,27 @@
-import { useState } from "react";
-import { register, extraireErreur } from "../api";
+import { useEffect, useState } from "react";
+import { register, verifierInvitation, extraireErreur } from "../api";
 
-export default function Register({ onInscrit, onAllerConnexion }) {
+export default function Register({ onInscrit, onAllerConnexion, invitationToken }) {
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
-  const [mode, setMode] = useState("creer"); // "creer" ou "rejoindre"
+  const [mode, setMode] = useState(invitationToken ? "rejoindre" : "creer");
   const [nomFoyer, setNomFoyer] = useState("");
-  const [codeFoyer, setCodeFoyer] = useState("");
+  const [tokenSaisi, setTokenSaisi] = useState(invitationToken || "");
+  const [infoInvitation, setInfoInvitation] = useState(null); // { valide, nom_foyer }
   const [questionSecrete, setQuestionSecrete] = useState("");
   const [reponseSecrete, setReponseSecrete] = useState("");
   const [erreur, setErreur] = useState("");
+
+  useEffect(() => {
+    if (mode !== "rejoindre" || !tokenSaisi) {
+      setInfoInvitation(null);
+      return;
+    }
+    verifierInvitation(tokenSaisi)
+      .then((res) => setInfoInvitation(res.data))
+      .catch(() => setInfoInvitation({ valide: false }));
+  }, [mode, tokenSaisi]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +33,7 @@ export default function Register({ onInscrit, onAllerConnexion }) {
         mot_de_passe: motDePasse,
         ...(mode === "creer"
           ? { nom_foyer: nomFoyer || undefined }
-          : { code_foyer: parseInt(codeFoyer, 10) }),
+          : { invitation_token: tokenSaisi.trim() }),
         ...(questionSecrete && reponseSecrete
           ? { question_secrete: questionSecrete, reponse_secrete: reponseSecrete }
           : {}),
@@ -64,24 +75,26 @@ export default function Register({ onInscrit, onAllerConnexion }) {
         required
       />
 
-      <div className="auth-mode-choix">
-        <label>
-          <input
-            type="radio"
-            checked={mode === "creer"}
-            onChange={() => setMode("creer")}
-          />
-          Créer un nouveau foyer (premier inscrit du couple)
-        </label>
-        <label>
-          <input
-            type="radio"
-            checked={mode === "rejoindre"}
-            onChange={() => setMode("rejoindre")}
-          />
-          Rejoindre un foyer existant
-        </label>
-      </div>
+      {!invitationToken && (
+        <div className="auth-mode-choix">
+          <label>
+            <input
+              type="radio"
+              checked={mode === "creer"}
+              onChange={() => setMode("creer")}
+            />
+            Créer un nouveau foyer (premier inscrit)
+          </label>
+          <label>
+            <input
+              type="radio"
+              checked={mode === "rejoindre"}
+              onChange={() => setMode("rejoindre")}
+            />
+            J'ai un lien d'invitation
+          </label>
+        </div>
+      )}
 
       {mode === "creer" ? (
         <input
@@ -91,13 +104,29 @@ export default function Register({ onInscrit, onAllerConnexion }) {
           onChange={(e) => setNomFoyer(e.target.value)}
         />
       ) : (
-        <input
-          type="number"
-          placeholder="Numéro du foyer (donné par ton/ta partenaire)"
-          value={codeFoyer}
-          onChange={(e) => setCodeFoyer(e.target.value)}
-          required
-        />
+        <>
+          {!invitationToken && (
+            <input
+              type="text"
+              placeholder="Colle ton lien ou code d'invitation"
+              value={tokenSaisi}
+              onChange={(e) => {
+                const v = e.target.value;
+                // Accepte qu'on colle le lien complet ou juste le jeton
+                const match = v.match(/invite=([^&\s]+)/);
+                setTokenSaisi(match ? match[1] : v.trim());
+              }}
+              required
+            />
+          )}
+          {infoInvitation && (
+            <p className={infoInvitation.valide ? "compte-message-ok" : "auth-erreur"}>
+              {infoInvitation.valide
+                ? `Tu vas rejoindre : ${infoInvitation.nom_foyer}`
+                : "Ce lien d'invitation est invalide, expiré ou déjà utilisé."}
+            </p>
+          )}
+        </>
       )}
 
       <label>
@@ -118,7 +147,9 @@ export default function Register({ onInscrit, onAllerConnexion }) {
         />
       )}
 
-      <button type="submit">S'inscrire</button>
+      <button type="submit" disabled={mode === "rejoindre" && infoInvitation && !infoInvitation.valide}>
+        S'inscrire
+      </button>
       <p>
         Déjà un compte ?{" "}
         <button type="button" className="lien" onClick={onAllerConnexion}>

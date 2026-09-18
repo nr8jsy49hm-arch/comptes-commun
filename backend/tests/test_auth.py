@@ -31,14 +31,39 @@ def test_mot_de_passe_trop_court_refuse(client):
     assert res.status_code == 422
 
 
-def test_rejoindre_foyer_existant(client):
+def test_rejoindre_foyer_via_invitation(client):
     createur = inscrire(client, nom="Pierre", email="pierre@test.fr")
     foyer_id = createur["utilisateur"]["foyer_id"]
+    headers_pierre = entetes_auth(createur["access_token"])
+
+    invitation = client.post("/foyer/invitations", headers=headers_pierre).json()
+    token = invitation["token"]
+
+    # La route publique confirme que le jeton est valide avant même l'inscription
+    info = client.get(f"/auth/invitations/{token}").json()
+    assert info["valide"] is True
 
     partenaire = inscrire(
-        client, nom="Orléanes", email="orleanes@test.fr", code_foyer=foyer_id
+        client, nom="Orléanes", email="orleanes@test.fr", invitation_token=token
     )
     assert partenaire["utilisateur"]["foyer_id"] == foyer_id
+
+    # Le jeton est à usage unique : une deuxième inscription avec le même jeton échoue
+    res = client.post(
+        "/auth/register",
+        json={
+            "nom": "Quelqu'un d'autre",
+            "email": "intrus@test.fr",
+            "mot_de_passe": "motdepasse123",
+            "invitation_token": token,
+        },
+    )
+    assert res.status_code == 400
+
+
+def test_invitation_inconnue_invalide(client):
+    res = client.get("/auth/invitations/un-jeton-qui-n-existe-pas")
+    assert res.json()["valide"] is False
 
 
 def test_changer_mot_de_passe(client):

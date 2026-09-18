@@ -35,9 +35,14 @@ function getThemeInitial() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
+function getInvitationDepuisUrl() {
+  return new URLSearchParams(window.location.search).get("invite");
+}
+
 export default function App() {
   const [utilisateur, setUtilisateur] = useState(getUtilisateurStocke());
-  const [ecranAuth, setEcranAuth] = useState("login"); // "login" ou "register"
+  const [invitationToken] = useState(getInvitationDepuisUrl);
+  const [ecranAuth, setEcranAuth] = useState(getInvitationDepuisUrl() ? "register" : "login");
   const [refreshKey, setRefreshKey] = useState(0);
   const [ongletActif, setOngletActif] = useState("solo");
   const [theme, setTheme] = useState(getThemeInitial);
@@ -74,6 +79,7 @@ export default function App() {
           <Register
             onInscrit={setUtilisateur}
             onAllerConnexion={() => setEcranAuth("login")}
+            invitationToken={invitationToken}
           />
         )}
         {ecranAuth === "oublie" && (

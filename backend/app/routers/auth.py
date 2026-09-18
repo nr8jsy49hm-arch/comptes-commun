@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from datetime import datetime, timezone
 
 from .. import models, schemas
 from ..database import get_db
@@ -12,6 +13,16 @@ from ..limiter import limiter
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
+@router.get("/invitations/{token}", response_model=schemas.InvitationInfo)
+def verifier_invitation(token: str, db: Session = Depends(get_db)):
+    """Route publique (avant inscription) : dit si un jeton d'invitation est valide, et le nom du foyer si oui."""
+    invitation = db.query(models.Invitation).filter(models.Invitation.token == token).first()
+    if not invitation or invitation.utilisee_le or invitation.expire_le < datetime.now(timezone.utc):
+        return schemas.InvitationInfo(valide=False)
+    foyer = db.query(models.Foyer).filter(models.Foyer.id == invitation.foyer_id).first()
+    return schemas.InvitationInfo(valide=True, nom_foyer=foyer.nom if foyer else None)
+
+
 @router.post("/register", response_model=schemas.Token)
 @limiter.limit("5/minute")
 def register(request: Request, payload: schemas.UtilisateurCreate, db: Session = Depends(get_db)):
@@ -19,11 +30,21 @@ def register(request: Request, payload: schemas.UtilisateurCreate, db: Session =
     if existant:
         raise HTTPException(status_code=400, detail="Un compte existe déjà avec cet email")
 
-    # Détermine le foyer : soit on en crée un nouveau, soit on rejoint un foyer existant
-    if payload.code_foyer:
-        foyer = db.query(models.Foyer).filter(models.Foyer.id == payload.code_foyer).first()
+    # Détermine le foyer : soit on en crée un nouveau, soit on rejoint un foyer existant via invitation
+    invitation = None
+    if payload.invitation_token:
+        invitation = (
+            db.query(models.Invitation).filter(models.Invitation.token == payload.invitation_token).first()
+        )
+        if (
+            not invitation
+            or invitation.utilisee_le
+            or invitation.expire_le < datetime.now(timezone.utc)
+        ):
+            raise HTTPException(status_code=400, detail="Invitation invalide, expirée ou déjà utilisée")
+        foyer = db.query(models.Foyer).filter(models.Foyer.id == invitation.foyer_id).first()
         if not foyer:
-            raise HTTPException(status_code=404, detail="Foyer introuvable avec ce code")
+            raise HTTPException(status_code=404, detail="Foyer introuvable pour cette invitation")
     else:
         foyer = models.Foyer(nom=payload.nom_foyer or f"Foyer de {payload.nom}")
         db.add(foyer)
@@ -41,6 +62,10 @@ def register(request: Request, payload: schemas.UtilisateurCreate, db: Session =
         else None,
     )
     db.add(utilisateur)
+
+    if invitation:
+        invitation.utilisee_le = datetime.now(timezone.utc)
+
     db.commit()
     db.refresh(utilisateur)
 

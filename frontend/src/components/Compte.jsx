@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
+import { Copy, X } from "lucide-react";
 import {
   changerMotDePasse,
   definirQuestionSecrete,
   getMaQuestionSecrete,
   supprimerCompte,
+  creerInvitation,
+  listerInvitations,
+  revoquerInvitation,
   extraireErreur,
 } from "../api";
 
@@ -34,6 +38,37 @@ export default function Compte({ onCompteSupprime }) {
       setMessageNotifs("Notifications désactivées.");
     }
   };
+
+  // Invitations pour rejoindre le foyer
+  const [invitations, setInvitations] = useState([]);
+  const [lienCopie, setLienCopie] = useState(false);
+
+  const chargerInvitations = () => listerInvitations().then((res) => setInvitations(res.data));
+
+  useEffect(() => {
+    chargerInvitations();
+  }, []);
+
+  const handleCreerInvitation = async () => {
+    await creerInvitation();
+    await chargerInvitations();
+  };
+
+  const handleCopier = (token) => {
+    const lien = `${window.location.origin}/?invite=${token}`;
+    navigator.clipboard.writeText(lien);
+    setLienCopie(token);
+    setTimeout(() => setLienCopie(false), 2000);
+  };
+
+  const handleRevoquer = async (id) => {
+    await revoquerInvitation(id);
+    await chargerInvitations();
+  };
+
+  const invitationsActives = invitations.filter(
+    (inv) => !inv.utilisee_le && new Date(inv.expire_le) > new Date()
+  );
 
   // Changement de mot de passe
   const [motDePasseActuel, setMotDePasseActuel] = useState("");
@@ -107,6 +142,48 @@ export default function Compte({ onCompteSupprime }) {
           <input type="checkbox" checked={notifsActivees} onChange={handleToggleNotifs} />
           Activer les notifications du navigateur
         </label>
+      </div>
+
+      <div className="dashboard compte-section">
+        <h3>Inviter quelqu'un dans le foyer</h3>
+        <p className="compte-question-actuelle">
+          Génère un lien à usage unique, valable 7 jours, pour que quelqu'un rejoigne ton
+          foyer en toute sécurité — bien plus sûr qu'un simple numéro à deviner.
+        </p>
+        <button type="button" onClick={handleCreerInvitation}>
+          Générer un lien d'invitation
+        </button>
+
+        {invitationsActives.length > 0 && (
+          <ul className="invitations-liste">
+            {invitationsActives.map((inv) => (
+              <li key={inv.id}>
+                <span>
+                  Expire le {new Date(inv.expire_le).toLocaleDateString("fr-FR")}
+                </span>
+                <span className="categorie-actions">
+                  <button
+                    type="button"
+                    className="tableau-supprimer"
+                    onClick={() => handleCopier(inv.token)}
+                    aria-label="Copier le lien"
+                  >
+                    <Copy size={14} strokeWidth={1.75} />
+                  </button>
+                  <button
+                    type="button"
+                    className="tableau-supprimer"
+                    onClick={() => handleRevoquer(inv.id)}
+                    aria-label="Révoquer"
+                  >
+                    <X size={14} strokeWidth={1.75} />
+                  </button>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {lienCopie && <p className="compte-message-ok">Lien copié !</p>}
       </div>
 
       <div className="dashboard compte-section">

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, field_validator
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 
 LONGUEUR_MIN_MOT_DE_PASSE = 8
@@ -15,8 +15,8 @@ class UtilisateurCreate(BaseModel):
     nom: str
     email: EmailStr
     mot_de_passe: str
-    nom_foyer: Optional[str] = None  # si fourni, crée un nouveau foyer ; sinon rejoint via code_foyer
-    code_foyer: Optional[int] = None  # id du foyer existant à rejoindre (ex: la conjointe qui rejoint Pierre)
+    nom_foyer: Optional[str] = None  # si fourni, crée un nouveau foyer ; sinon rejoint via invitation_token
+    invitation_token: Optional[str] = None  # jeton d'invitation pour rejoindre un foyer existant
     question_secrete: Optional[str] = None
     reponse_secrete: Optional[str] = None
 
@@ -234,3 +234,19 @@ class AlertesResponse(BaseModel):
     depassement_budget_commun: Optional[float] = None
     depassement_budget_solo: Optional[float] = None
     jours_sans_depense_commune: Optional[int] = None
+
+
+class Invitation(BaseModel):
+    id: int
+    token: str
+    expire_le: datetime
+    utilisee_le: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class InvitationInfo(BaseModel):
+    """Réponse publique (avant inscription) : le strict nécessaire pour afficher l'écran de rejoindre."""
+    valide: bool
+    nom_foyer: Optional[str] = None

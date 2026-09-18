@@ -977,6 +977,26 @@ button:disabled {
   background: #7c3820;
 }
 
+.invitations-liste {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+}
+
+.invitations-liste li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--color-line);
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+}
+
+.invitations-liste li:last-child {
+  border-bottom: none;
+}
+
 /* ---------- Gestion des catégories ---------- */
 
 .gestion-categories ul {

@@ -131,3 +131,16 @@ class VersementObjectif(Base):
     objectif_id = Column(Integer, ForeignKey("objectifs.id"))
 
     objectif = relationship("Objectif", back_populates="versements")
+
+
+class Invitation(Base):
+    """Invitation à rejoindre un foyer, via un jeton aléatoire non-devinable (remplace l'ancien code_foyer numérique)."""
+    __tablename__ = "invitations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    token = Column(String, unique=True, nullable=False, index=True)
+    foyer_id = Column(Integer, ForeignKey("foyers.id"))
+    cree_par_id = Column(Integer, ForeignKey("utilisateurs.id"))
+    expire_le = Column(DateTime(timezone=True), nullable=False)
+    utilisee_le = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

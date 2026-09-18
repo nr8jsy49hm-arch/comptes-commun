@@ -77,6 +77,12 @@ export const renommerCategorie = (id, nom) => api.patch(`/categories/${id}`, { n
 export const supprimerCategorie = (id) => api.delete(`/categories/${id}`);
 export const getMembresFoyer = () => api.get("/foyer/membres");
 
+// --- Invitations (rejoindre un foyer) ---
+export const creerInvitation = () => api.post("/foyer/invitations");
+export const listerInvitations = () => api.get("/foyer/invitations");
+export const revoquerInvitation = (id) => api.delete(`/foyer/invitations/${id}`);
+export const verifierInvitation = (token) => api.get(`/auth/invitations/${token}`);
+
 // --- Budget mensuel ---
 export const getBudgetCourant = () => api.get("/budgets/mois-courant");
 export const definirBudget = (montant) => api.post("/budgets/", { montant });
