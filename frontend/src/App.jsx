@@ -11,6 +11,7 @@ import ListeDepenses from "./components/ListeDepenses";
 import GestionCategories from "./components/GestionCategories";
 import GestionEtiquettes from "./components/GestionEtiquettes";
 import GestionRecurrentes from "./components/GestionRecurrentes";
+import CalendrierDepenses from "./components/CalendrierDepenses";
 import CleRepartition from "./components/CleRepartition";
 import Historique from "./components/Historique";
 import Objectifs from "./components/Objectifs";
@@ -212,6 +213,7 @@ export default function App() {
               <GestionRecurrentes key={refreshKey} />
               <GestionCategories key={refreshKey} />
               <GestionEtiquettes key={refreshKey} />
+              <CalendrierDepenses key={refreshKey} />
               <ListeDepenses key={refreshKey} />
             </>
           )}

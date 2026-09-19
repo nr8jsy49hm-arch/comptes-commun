@@ -127,6 +127,10 @@ $env:DATABASE_URL="<url-du-tunnel>"
 alembic upgrade head
 ```
 
+## Vue calendrier
+
+Onglet Nos Dépenses : grille mensuelle avec le total dépensé chaque jour, navigation mois par mois, jour courant repéré visuellement. Cliquer sur un jour affiche le détail des dépenses de ce jour (catégorie, note, payeur, montant). Aucun nouvel endpoint backend, regroupement fait côté frontend à partir de la liste des dépenses déjà chargée.
+
 ## Dépenses récurrentes
 
 Onglet Nos Dépenses : programme un loyer, un abonnement ou une facture fixe (nom, montant, jour du mois, catégorie, payeur). Génération **automatique à la demande** — dès que quelqu'un ouvre le Tableau de bord ou la liste des dépenses ce mois-ci, la dépense du mois est créée si elle n'existe pas déjà (pas besoin de tâche planifiée séparée). Si le montant d'une règle change d'un mois sur l'autre, un rappel apparaît dans les notifications. Les règles peuvent être suspendues (sans les supprimer) ou supprimées.
