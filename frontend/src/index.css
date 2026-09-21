@@ -1260,6 +1260,31 @@ button:disabled {
   background: var(--color-brick);
 }
 
+/* ---------- Couleur d'accent ---------- */
+
+.couleurs-accent-choix {
+  display: flex;
+  gap: 10px;
+}
+
+.couleur-pastille {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  box-shadow: var(--shadow-raised);
+  padding: 0;
+  cursor: pointer;
+}
+
+.couleur-pastille:hover {
+  transform: scale(1.08);
+}
+
+.couleur-pastille-active {
+  border-color: var(--color-ink);
+}
+
 .liste-depenses-filtre {
   margin-bottom: 16px;
 }

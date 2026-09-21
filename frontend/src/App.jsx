@@ -8,6 +8,7 @@ import Calculette from "./components/Calculette";
 import Cagnottes from "./components/Cagnottes";
 import CagnottePublique from "./components/CagnottePublique";
 import RechercheGlobale from "./components/RechercheGlobale";
+import { appliquerCouleurAccent, getCouleurAccentInitiale } from "./themeCouleur";
 import BudgetsCategories from "./components/BudgetsCategories";
 import DepenseForm from "./components/DepenseForm";
 import Reglement from "./components/Reglement";
@@ -95,6 +96,10 @@ export default function App() {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    appliquerCouleurAccent(getCouleurAccentInitiale());
+  }, []);
 
   const basculerTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 

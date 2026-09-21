@@ -127,6 +127,10 @@ $env:DATABASE_URL="<url-du-tunnel>"
 alembic upgrade head
 ```
 
+## Thème personnalisable
+
+Dans "Mon compte" : cinq couleurs d'accent au choix (Laiton par défaut, Bleu ardoise, Prune, Bleu canard, Moutarde) — remplace la couleur des boutons, liens et accents dans toute l'appli. Choix mémorisé par appareil (localStorage), compatible avec le mode sombre. Purement frontend, aucun backend impliqué.
+
 ## Budgets par catégorie (enveloppes)
 
 Sur le Tableau de bord, en plus du budget global : des enveloppes par catégorie (ex : 300€ max pour les courses), avec barre de progression et alerte de dépassement — remontée dans les notifications existantes, comme pour le budget global.

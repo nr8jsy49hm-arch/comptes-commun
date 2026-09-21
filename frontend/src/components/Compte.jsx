@@ -12,8 +12,17 @@ import {
   extraireErreur,
 } from "../api";
 import LegalDocs from "./LegalDocs";
+import { COULEURS_ACCENT, appliquerCouleurAccent, getCouleurAccentInitiale } from "../themeCouleur";
 
 export default function Compte({ onCompteSupprime }) {
+  const [couleurAccent, setCouleurAccent] = useState(getCouleurAccentInitiale);
+
+  const handleChoisirCouleur = (id) => {
+    localStorage.setItem("couleur_accent", id);
+    appliquerCouleurAccent(id);
+    setCouleurAccent(id);
+  };
+
   // Notifications navigateur
   const [notifsActivees, setNotifsActivees] = useState(
     localStorage.getItem("notifications_navigateur") === "true"
@@ -147,6 +156,27 @@ export default function Compte({ onCompteSupprime }) {
           <button type="button" className="lien" onClick={() => setAfficherLegal(true)}>
             Politique de confidentialité / CGU
           </button>
+        </div>
+      </div>
+
+      <div className="dashboard compte-section">
+        <h3>Couleur d'accent</h3>
+        <p className="compte-question-actuelle">
+          Change la couleur des boutons et accents dans toute l'appli — ton choix est mémorisé
+          sur cet appareil.
+        </p>
+        <div className="couleurs-accent-choix">
+          {COULEURS_ACCENT.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              className={`couleur-pastille${couleurAccent === c.id ? " couleur-pastille-active" : ""}`}
+              style={{ background: c.brass }}
+              onClick={() => handleChoisirCouleur(c.id)}
+              aria-label={c.nom}
+              title={c.nom}
+            />
+          ))}
         </div>
       </div>
 
