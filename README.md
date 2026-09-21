@@ -127,6 +127,10 @@ $env:DATABASE_URL="<url-du-tunnel>"
 alembic upgrade head
 ```
 
+## Recherche globale
+
+Bouton "Rechercher" dans la barre latérale : trouve une dépense par mot-clé (note, catégorie, étiquette, payeur, montant), peu importe le mois — pratique pour retrouver "cette dépense de mars dont je ne me souviens plus exactement quand". Recherche insensible à la casse et aux accents, résultats limités aux 50 plus récents. Purement côté frontend, aucun nouvel endpoint backend.
+
 ## Cagnottes pour projets communs
 
 Onglet Cagnottes : crée une cagnotte pour un projet (voyage groupé, cadeau d'anniversaire ou de mariage...), avec un montant cible et une échéance optionnels. **Purement déclaratif**, comme les objectifs d'épargne — aucun paiement réel n'est traité, chacun indique juste ce qu'il a mis.

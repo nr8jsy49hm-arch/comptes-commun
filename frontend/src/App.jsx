@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, Home, Wallet, Target, History, LogOut, Sun, Moon, Settings, Calculator, PiggyBank } from "lucide-react";
+import { User, Home, Wallet, Target, History, LogOut, Sun, Moon, Settings, Calculator, PiggyBank, Search } from "lucide-react";
 import Dashboard from "./components/Dashboard";
 import Graphiques from "./components/Graphiques";
 import ComparaisonPeriodes from "./components/ComparaisonPeriodes";
@@ -7,6 +7,7 @@ import SimulateurAchat from "./components/SimulateurAchat";
 import Calculette from "./components/Calculette";
 import Cagnottes from "./components/Cagnottes";
 import CagnottePublique from "./components/CagnottePublique";
+import RechercheGlobale from "./components/RechercheGlobale";
 import DepenseForm from "./components/DepenseForm";
 import Reglement from "./components/Reglement";
 import ListeDepenses from "./components/ListeDepenses";
@@ -69,6 +70,7 @@ export default function App() {
   const [messageVerification, setMessageVerification] = useState(null);
   const [bandeauEmailIgnore, setBandeauEmailIgnore] = useState(false);
   const [afficherCalculette, setAfficherCalculette] = useState(false);
+  const [afficherRecherche, setAfficherRecherche] = useState(false);
 
   useEffect(() => {
     const token = getVerificationDepuisUrl();
@@ -170,6 +172,10 @@ export default function App() {
             <span className="sidebar-utilisateur-nom">{utilisateur.nom}</span>
             <span className="sidebar-utilisateur-foyer">Foyer n°{utilisateur.foyer_id}</span>
           </div>
+          <button type="button" className="nav-item" onClick={() => setAfficherRecherche(true)}>
+            <Search size={17} strokeWidth={1.75} />
+            <span>Rechercher</span>
+          </button>
           <button type="button" className="nav-item" onClick={() => setAfficherCalculette(true)}>
             <Calculator size={17} strokeWidth={1.75} />
             <span>Calculette</span>
@@ -242,6 +248,7 @@ export default function App() {
       </main>
 
       {afficherCalculette && <Calculette onFermer={() => setAfficherCalculette(false)} />}
+      {afficherRecherche && <RechercheGlobale onFermer={() => setAfficherRecherche(false)} />}
     </div>
   );
 }
