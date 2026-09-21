@@ -246,6 +246,22 @@ class BudgetPersonnel(BaseModel):
         from_attributes = True
 
 
+class BudgetCategorieIn(BaseModel):
+    categorie_id: int
+    montant: float
+    mois: Optional[date] = None
+
+
+class BudgetCategorieOut(BaseModel):
+    id: int
+    categorie_id: int
+    categorie_nom: str
+    montant: float
+    depense_actuelle: float
+    reste: float
+    mois: date
+
+
 class DashboardResponse(BaseModel):
     total_mois: float
     par_categorie: dict[str, float]
@@ -314,6 +330,7 @@ class AlertesResponse(BaseModel):
     depassement_budget_solo: Optional[float] = None
     jours_sans_depense_commune: Optional[int] = None
     changements_recurrentes: list[str] = []
+    enveloppes_depassees: list[str] = []
 
 
 class Invitation(BaseModel):

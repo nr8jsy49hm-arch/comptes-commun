@@ -69,9 +69,28 @@ def obtenir_alertes(
     )
     jours_sans_depense = (aujourdhui - derniere_depense.date).days if derniere_depense else None
 
+    # --- Enveloppes par catégorie dépassées ---
+    enveloppes_depassees = []
+    budgets_categories = (
+        db.query(models.BudgetCategorie)
+        .filter(models.BudgetCategorie.foyer_id == current_user.foyer_id, models.BudgetCategorie.mois == debut_mois)
+        .all()
+    )
+    for bc in budgets_categories:
+        depense_categorie = sum(
+            d.montant for d in depenses_communes_mois if d.categorie_id == bc.categorie_id
+        )
+        if depense_categorie > bc.montant:
+            categorie = db.query(models.Categorie).filter(models.Categorie.id == bc.categorie_id).first()
+            enveloppes_depassees.append(
+                f"Enveloppe « {categorie.nom if categorie else 'Autre'} » dépassée de "
+                f"{(depense_categorie - bc.montant):.2f} € ce mois-ci."
+            )
+
     return schemas.AlertesResponse(
         depassement_budget_commun=depassement_commun,
         depassement_budget_solo=depassement_solo,
         jours_sans_depense_commune=jours_sans_depense,
         changements_recurrentes=changements_recurrentes,
+        enveloppes_depassees=enveloppes_depassees,
     )

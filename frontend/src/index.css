@@ -1239,6 +1239,27 @@ button:disabled {
   flex-shrink: 0;
 }
 
+/* ---------- Budgets par catégorie (enveloppes) ---------- */
+
+.enveloppes-liste {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+}
+
+.enveloppes-liste li {
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--color-line);
+}
+
+.enveloppes-liste li:last-child {
+  border-bottom: none;
+}
+
+.enveloppe-barre-depassee {
+  background: var(--color-brick);
+}
+
 .liste-depenses-filtre {
   margin-bottom: 16px;
 }
@@ -2181,6 +2202,7 @@ button:disabled {
   .graphiques,
   .comparaison-periodes,
   .simulateur,
+  .enveloppes,
   .budget-bloc form,
   .contenu-header,
   .alertes-bandeau,

@@ -71,6 +71,12 @@ export default function NotificationsBanner() {
         notifierNavigateur("Montant récurrent changé", texte);
       });
 
+      (data.enveloppes_depassees || []).forEach((texte, i) => {
+        const cle = `enveloppe-${i}-${texte}`;
+        liste.push({ cle, texte });
+        notifierNavigateur("Enveloppe dépassée", texte);
+      });
+
       setAlertes(liste);
     });
   }, []);

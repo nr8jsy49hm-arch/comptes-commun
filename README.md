@@ -127,6 +127,10 @@ $env:DATABASE_URL="<url-du-tunnel>"
 alembic upgrade head
 ```
 
+## Budgets par catégorie (enveloppes)
+
+Sur le Tableau de bord, en plus du budget global : des enveloppes par catégorie (ex : 300€ max pour les courses), avec barre de progression et alerte de dépassement — remontée dans les notifications existantes, comme pour le budget global.
+
 ## Recherche globale
 
 Bouton "Rechercher" dans la barre latérale : trouve une dépense par mot-clé (note, catégorie, étiquette, payeur, montant), peu importe le mois — pratique pour retrouver "cette dépense de mars dont je ne me souviens plus exactement quand". Recherche insensible à la casse et aux accents, résultats limités aux 50 plus récents. Purement côté frontend, aucun nouvel endpoint backend.

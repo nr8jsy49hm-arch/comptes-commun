@@ -124,6 +124,12 @@ export const verifierInvitation = (token) => api.get(`/auth/invitations/${token}
 export const getBudgetCourant = () => api.get("/budgets/mois-courant");
 export const definirBudget = (montant) => api.post("/budgets/", { montant });
 
+// --- Budgets par catégorie (enveloppes) ---
+export const getBudgetsCategories = () => api.get("/budgets/categories");
+export const definirBudgetCategorie = (categorie_id, montant) =>
+  api.post("/budgets/categories", { categorie_id, montant });
+export const supprimerBudgetCategorie = (categorieId) => api.delete(`/budgets/categories/${categorieId}`);
+
 // --- Historique ---
 export const getAnneesDisponibles = () => api.get("/historique/annees");
 export const getHistoriqueAnnee = (annee) => api.get(`/historique/${annee}`);

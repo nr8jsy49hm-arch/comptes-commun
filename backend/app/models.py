@@ -150,6 +150,17 @@ class BudgetPersonnel(Base):
     utilisateur_id = Column(Integer, ForeignKey("utilisateurs.id"))
 
 
+class BudgetCategorie(Base):
+    """Budget mensuel par catégorie ('enveloppe'), en plus du budget global du foyer."""
+    __tablename__ = "budgets_categories"
+
+    id = Column(Integer, primary_key=True, index=True)
+    mois = Column(Date, nullable=False)
+    montant = Column(Float, nullable=False)
+    categorie_id = Column(Integer, ForeignKey("categories.id"))
+    foyer_id = Column(Integer, ForeignKey("foyers.id"))
+
+
 class Objectif(Base):
     """Objectif d'épargne (vacances, apport maison, etc.), plusieurs possibles par foyer."""
     __tablename__ = "objectifs"

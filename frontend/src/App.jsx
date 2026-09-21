@@ -8,6 +8,7 @@ import Calculette from "./components/Calculette";
 import Cagnottes from "./components/Cagnottes";
 import CagnottePublique from "./components/CagnottePublique";
 import RechercheGlobale from "./components/RechercheGlobale";
+import BudgetsCategories from "./components/BudgetsCategories";
 import DepenseForm from "./components/DepenseForm";
 import Reglement from "./components/Reglement";
 import ListeDepenses from "./components/ListeDepenses";
@@ -218,6 +219,7 @@ export default function App() {
           {ongletActif === "tableau" && (
             <>
               <Dashboard key={refreshKey} />
+              <BudgetsCategories key={refreshKey} />
               <ComparaisonPeriodes key={refreshKey} />
               <SimulateurAchat key={refreshKey} />
               <Graphiques key={refreshKey} />
