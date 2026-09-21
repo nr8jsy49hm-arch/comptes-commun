@@ -127,6 +127,10 @@ $env:DATABASE_URL="<url-du-tunnel>"
 alembic upgrade head
 ```
 
+## Photo de justificatif
+
+À l'ajout d'une dépense, possibilité de joindre une photo (ticket, facture) — compressée et redimensionnée directement dans le navigateur avant envoi (max ~1000px de large, JPEG) pour rester léger, stockée en base (pas de service de stockage tiers). La liste des dépenses n'expose jamais l'image elle-même (trop lourd) : seulement un indicateur `a_photo`, avec une icône cliquable qui charge et affiche la photo en plein écran à la demande via une route dédiée.
+
 ## Vue calendrier
 
 Onglet Nos Dépenses : grille mensuelle avec le total dépensé chaque jour, navigation mois par mois, jour courant repéré visuellement. Cliquer sur un jour affiche le détail des dépenses de ce jour (catégorie, note, payeur, montant). Aucun nouvel endpoint backend, regroupement fait côté frontend à partir de la liste des dépenses déjà chargée.

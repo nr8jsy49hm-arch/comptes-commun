@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { Camera } from "lucide-react";
 import { creerDepense, getCategories, creerCategorie, getMembresFoyer, getEtiquettes, creerEtiquette } from "../api";
+import { redimensionnerImage } from "../image";
 
 function getUtilisateurStocke() {
   const raw = localStorage.getItem("utilisateur");
@@ -19,6 +21,8 @@ export default function DepenseForm({ onDepenseCreee }) {
   const [etiquettes, setEtiquettes] = useState([]);
   const [etiquettesChoisies, setEtiquettesChoisies] = useState([]);
   const [nouvelleEtiquette, setNouvelleEtiquette] = useState("");
+  const [photo, setPhoto] = useState(null);
+  const [chargementPhoto, setChargementPhoto] = useState(false);
 
   const chargerCategories = async () => {
     const res = await getCategories();
@@ -63,6 +67,18 @@ export default function DepenseForm({ onDepenseCreee }) {
     setEtiquettesChoisies((prev) => [...prev, res.data.id]);
   };
 
+  const handleChoisirPhoto = async (e) => {
+    const fichier = e.target.files?.[0];
+    if (!fichier) return;
+    setChargementPhoto(true);
+    try {
+      const dataUrl = await redimensionnerImage(fichier);
+      setPhoto(dataUrl);
+    } finally {
+      setChargementPhoto(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!categorieId || !payeurId) return;
@@ -73,10 +89,12 @@ export default function DepenseForm({ onDepenseCreee }) {
       categorie_id: categorieId,
       payeur_id: payeurId,
       etiquette_ids: etiquettesChoisies,
+      photo,
     });
     setMontant("");
     setNote("");
     setEtiquettesChoisies([]);
+    setPhoto(null);
     onDepenseCreee?.();
   };
 
@@ -160,6 +178,24 @@ export default function DepenseForm({ onDepenseCreee }) {
             + Ajouter étiquette
           </button>
         </div>
+      </div>
+
+      <div className="etiquettes-champ">
+        <span className="etiquettes-champ-titre">Justificatif (optionnel)</span>
+        {photo ? (
+          <div className="photo-apercu">
+            <img src={photo} alt="Aperçu du justificatif" />
+            <button type="button" className="lien" onClick={() => setPhoto(null)}>
+              Retirer
+            </button>
+          </div>
+        ) : (
+          <label className="photo-input-label">
+            <Camera size={16} strokeWidth={1.75} />
+            {chargementPhoto ? "Traitement..." : "Ajouter une photo"}
+            <input type="file" accept="image/*" onChange={handleChoisirPhoto} hidden />
+          </label>
+        )}
       </div>
 
       <button type="submit">Ajouter</button>

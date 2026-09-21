@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { ChevronUp, ChevronDown, Trash2 } from "lucide-react";
+import { ChevronUp, ChevronDown, Trash2, Camera } from "lucide-react";
 import { IconeCategorie } from "../iconesCategories";
+import PhotoLightbox from "./PhotoLightbox";
 
 const COLONNES = [
   { id: "date", label: "Date" },
@@ -18,6 +19,7 @@ export default function TableauDepenses({
   onSupprimer,
 }) {
   const [tri, setTri] = useState({ colonne: "date", direction: "desc" });
+  const [photoOuverte, setPhotoOuverte] = useState(null);
 
   const lignes = useMemo(() => {
     return depenses.map((d) => ({
@@ -28,6 +30,7 @@ export default function TableauDepenses({
       note: d.note || "",
       montant: d.montant,
       etiquettes: d.etiquettes || [],
+      aPhoto: d.a_photo || false,
     }));
   }, [depenses, categoriesParId, payeursParId]);
 
@@ -95,6 +98,16 @@ export default function TableauDepenses({
               {afficherPayeur && <td>{l.payeur}</td>}
               <td className="tableau-note">
                 {l.note}
+                {l.aPhoto && (
+                  <button
+                    type="button"
+                    className="photo-icone-tableau"
+                    onClick={() => setPhotoOuverte(l.id)}
+                    aria-label="Voir le justificatif"
+                  >
+                    <Camera size={13} strokeWidth={1.75} />
+                  </button>
+                )}
                 {l.etiquettes.length > 0 && (
                   <div className="tableau-etiquettes">
                     {l.etiquettes.map((et) => (
@@ -122,6 +135,7 @@ export default function TableauDepenses({
           ))}
         </tbody>
       </table>
+      {photoOuverte && <PhotoLightbox depenseId={photoOuverte} onFermer={() => setPhotoOuverte(null)} />}
     </div>
   );
 }

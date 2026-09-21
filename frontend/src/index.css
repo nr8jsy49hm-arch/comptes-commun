@@ -1082,6 +1082,90 @@ button:disabled {
   margin-top: 2px;
 }
 
+/* ---------- Photo de justificatif ---------- */
+
+.photo-input-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-parchment);
+  border: 1px dashed var(--color-line);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  width: fit-content;
+}
+
+.photo-input-label:hover {
+  border-color: var(--color-brass);
+  color: var(--color-ink);
+}
+
+.photo-apercu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.photo-apercu img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-line);
+}
+
+.photo-icone-tableau {
+  display: inline-flex;
+  vertical-align: middle;
+  margin-left: 6px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: var(--color-brass-dark);
+  padding: 2px;
+}
+
+.photo-icone-tableau:hover {
+  background: none;
+  color: var(--color-brass);
+  transform: none;
+  box-shadow: none;
+}
+
+.photo-lightbox {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.photo-lightbox img {
+  max-width: 90vw;
+  max-height: 90vh;
+  display: block;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+.photo-lightbox-fermer {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  background: var(--color-paper);
+  border-radius: 50%;
+  box-shadow: var(--shadow-raised);
+  padding: 6px;
+}
+
+.photo-lightbox-chargement {
+  color: var(--color-paper);
+  background: var(--color-ink);
+  padding: 20px 30px;
+  border-radius: var(--radius);
+}
+
 .liste-depenses-filtre {
   margin-bottom: 16px;
 }

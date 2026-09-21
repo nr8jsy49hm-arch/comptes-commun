@@ -78,6 +78,44 @@ def modifier_etiquettes_depense(
     return depense
 
 
+@router.get("/{depense_id}/photo", response_model=schemas.DepensePhotoOut)
+def obtenir_photo_depense(
+    depense_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.Utilisateur = Depends(get_current_user),
+):
+    """La photo n'est jamais renvoyée dans la liste des dépenses (trop lourd) — on la
+    récupère séparément, seulement quand l'utilisateur clique pour la voir."""
+    depense = (
+        db.query(models.Depense)
+        .filter(models.Depense.id == depense_id, models.Depense.foyer_id == current_user.foyer_id)
+        .first()
+    )
+    if not depense:
+        raise HTTPException(status_code=404, detail="Dépense introuvable")
+    return schemas.DepensePhotoOut(photo=depense.photo)
+
+
+@router.patch("/{depense_id}/photo", response_model=schemas.Depense)
+def modifier_photo_depense(
+    depense_id: int,
+    payload: schemas.DepensePhotoIn,
+    db: Session = Depends(get_db),
+    current_user: models.Utilisateur = Depends(get_current_user),
+):
+    depense = (
+        db.query(models.Depense)
+        .filter(models.Depense.id == depense_id, models.Depense.foyer_id == current_user.foyer_id)
+        .first()
+    )
+    if not depense:
+        raise HTTPException(status_code=404, detail="Dépense introuvable")
+    depense.photo = payload.photo
+    db.commit()
+    db.refresh(depense)
+    return depense
+
+
 @router.delete("/{depense_id}")
 def supprimer_depense(
     depense_id: int,

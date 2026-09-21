@@ -128,6 +128,7 @@ class DepenseBase(BaseModel):
 
 class DepenseCreate(DepenseBase):
     etiquette_ids: list[int] = []
+    photo: Optional[str] = None  # data URL base64, optionnelle, envoyée seulement à la création
 
 
 class Depense(DepenseBase):
@@ -135,9 +136,18 @@ class Depense(DepenseBase):
     foyer_id: int
     etiquettes: list[Etiquette] = []
     recurrente_id: Optional[int] = None
+    a_photo: bool = False  # jamais l'image elle-même ici (trop lourd en liste) — voir /depenses/{id}/photo
 
     class Config:
         from_attributes = True
+
+
+class DepensePhotoIn(BaseModel):
+    photo: Optional[str] = None  # None pour retirer la photo
+
+
+class DepensePhotoOut(BaseModel):
+    photo: Optional[str] = None
 
 
 class DepenseEtiquettesIn(BaseModel):

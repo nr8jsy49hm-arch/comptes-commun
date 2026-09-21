@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, DateTime, Boolean, Table
+from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, DateTime, Boolean, Table, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .database import Base
@@ -73,6 +73,7 @@ class Depense(Base):
     payeur_id = Column(Integer, ForeignKey("utilisateurs.id"))
     foyer_id = Column(Integer, ForeignKey("foyers.id"))
     recurrente_id = Column(Integer, ForeignKey("depenses_recurrentes.id"), nullable=True)
+    photo = Column(Text, nullable=True)  # image du justificatif encodée en base64 (data URL)
 
     categorie = relationship("Categorie", back_populates="depenses")
     payeur = relationship("Utilisateur")
@@ -80,6 +81,10 @@ class Depense(Base):
     etiquettes = relationship("Etiquette", secondary=depense_etiquettes)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    @property
+    def a_photo(self) -> bool:
+        return self.photo is not None
 
 
 class DepenseRecurrente(Base):

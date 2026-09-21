@@ -99,6 +99,10 @@ export const creerDepenseRecurrente = (payload) => api.post("/depenses-recurrent
 export const modifierDepenseRecurrente = (id, payload) => api.patch(`/depenses-recurrentes/${id}`, payload);
 export const supprimerDepenseRecurrente = (id) => api.delete(`/depenses-recurrentes/${id}`);
 
+// --- Photo de justificatif ---
+export const getPhotoDepense = (id) => api.get(`/depenses/${id}/photo`);
+export const modifierPhotoDepense = (id, photo) => api.patch(`/depenses/${id}/photo`, { photo });
+
 // --- Invitations (rejoindre un foyer) ---
 export const creerInvitation = () => api.post("/foyer/invitations");
 export const listerInvitations = () => api.get("/foyer/invitations");
