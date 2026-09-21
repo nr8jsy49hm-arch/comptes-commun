@@ -9,6 +9,7 @@ import Cagnottes from "./components/Cagnottes";
 import CagnottePublique from "./components/CagnottePublique";
 import RechercheGlobale from "./components/RechercheGlobale";
 import { appliquerCouleurAccent, getCouleurAccentInitiale } from "./themeCouleur";
+import PageAccueil from "./components/PageAccueil";
 import BudgetsCategories from "./components/BudgetsCategories";
 import DepenseForm from "./components/DepenseForm";
 import Reglement from "./components/Reglement";
@@ -65,7 +66,7 @@ function getCagnotteDepuisUrl() {
 export default function App() {
   const [utilisateur, setUtilisateur] = useState(getUtilisateurStocke());
   const [invitationToken] = useState(getInvitationDepuisUrl);
-  const [ecranAuth, setEcranAuth] = useState(getInvitationDepuisUrl() ? "register" : "login");
+  const [ecranAuth, setEcranAuth] = useState(getInvitationDepuisUrl() ? "register" : "accueil");
   const [refreshKey, setRefreshKey] = useState(0);
   const [ongletActif, setOngletActif] = useState("solo");
   const [theme, setTheme] = useState(getThemeInitial);
@@ -120,6 +121,15 @@ export default function App() {
   }
 
   if (!utilisateur) {
+    if (ecranAuth === "accueil") {
+      return (
+        <PageAccueil
+          onSeConnecter={() => setEcranAuth("login")}
+          onCreerCompte={() => setEcranAuth("register")}
+        />
+      );
+    }
+
     return (
       <div className="app app-auth">
         <h1>Comptes Communs</h1>

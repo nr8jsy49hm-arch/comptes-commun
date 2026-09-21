@@ -127,6 +127,10 @@ $env:DATABASE_URL="<url-du-tunnel>"
 alembic upgrade head
 ```
 
+## Page d'accueil
+
+Avant de se connecter, un vrai écran d'accueil (plutôt qu'un formulaire brut) : accroche, courte présentation, quatre fonctionnalités phares en aperçu, et deux boutons clairs ("Créer un compte" / "J'ai déjà un compte"). Purement statique, aucun appel API.
+
 ## Thème personnalisable
 
 Dans "Mon compte" : cinq couleurs d'accent au choix (Laiton par défaut, Bleu ardoise, Prune, Bleu canard, Moutarde) — remplace la couleur des boutons, liens et accents dans toute l'appli. Choix mémorisé par appareil (localStorage), compatible avec le mode sombre. Purement frontend, aucun backend impliqué.
