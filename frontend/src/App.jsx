@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { User, Home, Wallet, Target, History, LogOut, Sun, Moon, Settings, Calculator } from "lucide-react";
+import { User, Home, Wallet, Target, History, LogOut, Sun, Moon, Settings, Calculator, PiggyBank } from "lucide-react";
 import Dashboard from "./components/Dashboard";
 import Graphiques from "./components/Graphiques";
 import ComparaisonPeriodes from "./components/ComparaisonPeriodes";
 import SimulateurAchat from "./components/SimulateurAchat";
 import Calculette from "./components/Calculette";
+import Cagnottes from "./components/Cagnottes";
+import CagnottePublique from "./components/CagnottePublique";
 import DepenseForm from "./components/DepenseForm";
 import Reglement from "./components/Reglement";
 import ListeDepenses from "./components/ListeDepenses";
@@ -35,6 +37,7 @@ const ONGLETS = [
   { id: "tableau", label: "Tableau de bord", Icon: Home },
   { id: "depenses", label: "Nos Dépenses", Icon: Wallet },
   { id: "objectifs", label: "Objectifs", Icon: Target },
+  { id: "cagnottes", label: "Cagnottes", Icon: PiggyBank },
   { id: "historique", label: "Historique", Icon: History },
 ];
 
@@ -50,6 +53,10 @@ function getInvitationDepuisUrl() {
 
 function getVerificationDepuisUrl() {
   return new URLSearchParams(window.location.search).get("verify");
+}
+
+function getCagnotteDepuisUrl() {
+  return new URLSearchParams(window.location.search).get("cagnotte");
 }
 
 export default function App() {
@@ -97,6 +104,12 @@ export default function App() {
   const handleCompteSupprime = () => {
     handleDeconnexion();
   };
+
+  // Un lien de cagnotte publique s'ouvre directement, connecté ou non — c'est une page à part.
+  const cagnotteToken = getCagnotteDepuisUrl();
+  if (cagnotteToken) {
+    return <CagnottePublique token={cagnotteToken} />;
+  }
 
   if (!utilisateur) {
     return (
@@ -219,6 +232,8 @@ export default function App() {
           )}
 
           {ongletActif === "objectifs" && <Objectifs />}
+
+          {ongletActif === "cagnottes" && <Cagnottes />}
 
           {ongletActif === "historique" && <Historique key={refreshKey} />}
 

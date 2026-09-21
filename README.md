@@ -127,6 +127,14 @@ $env:DATABASE_URL="<url-du-tunnel>"
 alembic upgrade head
 ```
 
+## Cagnottes pour projets communs
+
+Onglet Cagnottes : crée une cagnotte pour un projet (voyage groupé, cadeau d'anniversaire ou de mariage...), avec un montant cible et une échéance optionnels. **Purement déclaratif**, comme les objectifs d'épargne — aucun paiement réel n'est traité, chacun indique juste ce qu'il a mis.
+
+- **Lien public partageable** (`.../?cagnotte=<jeton>`) : n'importe qui peut voir la progression et contribuer **sans créer de compte**, en donnant simplement son nom. Idéal pour inviter des proches qui n'utilisent pas l'appli.
+- **Gestion** : copier le lien, le régénérer (invalide l'ancien si jamais il a fuité), verser directement depuis l'appli (le nom est pris automatiquement sur ton compte), clôturer/rouvrir, supprimer.
+- **Sécurité** : les routes publiques sont limitées en débit (anti-spam), et complètement isolées par foyer côté gestion (impossible de gérer la cagnotte d'un autre foyer, même en devinant son ID).
+
 ## Photo de justificatif
 
 À l'ajout d'une dépense, possibilité de joindre une photo (ticket, facture) — compressée et redimensionnée directement dans le navigateur avant envoi (max ~1000px de large, JPEG) pour rester léger, stockée en base (pas de service de stockage tiers). La liste des dépenses n'expose jamais l'image elle-même (trop lourd) : seulement un indicateur `a_photo`, avec une icône cliquable qui charge et affiche la photo en plein écran à la demande via une route dédiée.

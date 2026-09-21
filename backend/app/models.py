@@ -200,3 +200,49 @@ class VerificationEmail(Base):
     expire_le = Column(DateTime(timezone=True), nullable=False)
     verifiee_le = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class Cagnotte(Base):
+    """Cagnotte pour un projet commun (voyage groupé, cadeau...), partageable via un lien
+    public — les contributeurs n'ont pas besoin de compte. Purement déclaratif : chacun
+    indique ce qu'il a versé, aucun paiement réel n'est traité (pas d'intégration bancaire)."""
+    __tablename__ = "cagnottes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nom = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    montant_cible = Column(Float, nullable=True)
+    date_limite = Column(Date, nullable=True)
+    token_public = Column(String, unique=True, nullable=False, index=True)
+    cloturee = Column(Boolean, nullable=False, default=False, server_default="false")
+    foyer_id = Column(Integer, ForeignKey("foyers.id"))
+    createur_id = Column(Integer, ForeignKey("utilisateurs.id"))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    contributions = relationship(
+        "ContributionCagnotte", back_populates="cagnotte", cascade="all, delete-orphan"
+    )
+
+    @property
+    def montant_total(self) -> float:
+        return round(sum(c.montant for c in self.contributions), 2)
+
+    @property
+    def nb_contributions(self) -> int:
+        return len(self.contributions)
+
+
+class ContributionCagnotte(Base):
+    """Un versement déclaratif à une cagnotte — par un membre du foyer ou par un contributeur
+    externe sans compte (identifié par un simple nom donné au moment de contribuer)."""
+    __tablename__ = "contributions_cagnottes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nom_contributeur = Column(String, nullable=False)
+    montant = Column(Float, nullable=False)
+    message = Column(String, nullable=True)
+    date = Column(Date, nullable=False)
+    cagnotte_id = Column(Integer, ForeignKey("cagnottes.id"))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    cagnotte = relationship("Cagnotte", back_populates="contributions")

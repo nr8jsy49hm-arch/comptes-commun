@@ -1886,6 +1886,118 @@ button:disabled {
   margin: 10px 0 0;
 }
 
+/* ---------- Cagnottes ---------- */
+
+.cagnotte-badge-cloturee {
+  display: inline-block;
+  margin-left: 8px;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-ink-soft);
+  background: var(--color-line);
+  border-radius: 999px;
+  padding: 2px 8px;
+  vertical-align: middle;
+}
+
+.cagnotte-gestion {
+  border-top: 1px dashed var(--color-line);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.cagnotte-lien-partage {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cagnotte-lien-partage input {
+  flex: 1;
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
+  background: var(--color-parchment);
+}
+
+.cagnotte-lien-partage button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.cagnotte-verser-form {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.cagnotte-verser-form input {
+  flex: 1;
+}
+
+.cagnotte-verser-form button {
+  flex-shrink: 0;
+}
+
+/* ---------- Page publique de cagnotte ---------- */
+
+.cagnotte-publique {
+  max-width: 480px;
+}
+
+.cagnotte-publique-entete {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-brass-dark);
+}
+
+.cagnotte-publique-entete h1 {
+  margin: 0;
+}
+
+.cagnotte-publique-description {
+  text-align: center;
+  margin: 4px 0 20px;
+}
+
+.cagnotte-publique-footer {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
+  margin-top: 24px;
+}
+
+.cagnotte-participants {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cagnotte-participants li {
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--color-line);
+  font-size: 0.88rem;
+}
+
+.cagnotte-participants li:last-child {
+  border-bottom: none;
+}
+
+.cagnotte-participant-ligne {
+  display: flex;
+  justify-content: space-between;
+  font-variant-numeric: tabular-nums;
+}
+
+.cagnotte-participant-message {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px) {

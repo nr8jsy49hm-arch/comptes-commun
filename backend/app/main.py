@@ -24,6 +24,7 @@ from .routers import (
     admin,
     etiquettes,
     depenses_recurrentes,
+    cagnottes,
 )
 
 logger = logging.getLogger("uvicorn.error")
@@ -88,6 +89,7 @@ app.include_router(alertes.router)
 app.include_router(admin.router)
 app.include_router(etiquettes.router)
 app.include_router(depenses_recurrentes.router)
+app.include_router(cagnottes.router)
 
 
 @app.get("/")

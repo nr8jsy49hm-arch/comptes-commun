@@ -332,6 +332,71 @@ class InvitationInfo(BaseModel):
     nom_foyer: Optional[str] = None
 
 
+class ContributionCagnotteCreate(BaseModel):
+    nom_contributeur: Optional[str] = None  # ignoré pour la contribution authentifiée (nom du compte utilisé)
+    montant: float
+    message: Optional[str] = None
+
+    @field_validator("montant")
+    @classmethod
+    def _valider_montant(cls, v: float) -> float:
+        if v <= 0:
+            raise ValueError("Le montant doit être positif")
+        return v
+
+
+class ContributionCagnotte(BaseModel):
+    id: int
+    nom_contributeur: str
+    montant: float
+    message: Optional[str] = None
+    date: date
+
+    class Config:
+        from_attributes = True
+
+
+class CagnotteCreate(BaseModel):
+    nom: str
+    description: Optional[str] = None
+    montant_cible: Optional[float] = None
+    date_limite: Optional[date] = None
+
+
+class CagnotteUpdate(BaseModel):
+    nom: Optional[str] = None
+    description: Optional[str] = None
+    montant_cible: Optional[float] = None
+    date_limite: Optional[date] = None
+    cloturee: Optional[bool] = None
+
+
+class Cagnotte(BaseModel):
+    id: int
+    nom: str
+    description: Optional[str] = None
+    montant_cible: Optional[float] = None
+    date_limite: Optional[date] = None
+    cloturee: bool
+    token_public: str
+    montant_total: float
+    nb_contributions: int
+
+    class Config:
+        from_attributes = True
+
+
+class CagnottePublique(BaseModel):
+    """Vue publique (sans authentification) d'une cagnotte, via son lien de partage."""
+    nom: str
+    description: Optional[str] = None
+    montant_cible: Optional[float] = None
+    date_limite: Optional[date] = None
+    cloturee: bool
+    montant_total: float
+    contributions: list[ContributionCagnotte]
+
+
 class VerificationEmailResultat(BaseModel):
     reussi: bool
     message: str

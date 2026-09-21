@@ -103,6 +103,17 @@ export const supprimerDepenseRecurrente = (id) => api.delete(`/depenses-recurren
 export const getPhotoDepense = (id) => api.get(`/depenses/${id}/photo`);
 export const modifierPhotoDepense = (id, photo) => api.patch(`/depenses/${id}/photo`, { photo });
 
+// --- Cagnottes (projets communs) ---
+export const listerCagnottes = () => api.get("/cagnottes/");
+export const creerCagnotte = (payload) => api.post("/cagnottes/", payload);
+export const modifierCagnotte = (id, payload) => api.patch(`/cagnottes/${id}`, payload);
+export const supprimerCagnotte = (id) => api.delete(`/cagnottes/${id}`);
+export const regenererLienCagnotte = (id) => api.post(`/cagnottes/${id}/regenerer-lien`);
+export const contribuerCagnotte = (id, payload) => api.post(`/cagnottes/${id}/contribuer`, payload);
+export const getCagnottePublique = (token) => api.get(`/cagnottes/publique/${token}`);
+export const contribuerCagnottePublique = (token, payload) =>
+  api.post(`/cagnottes/publique/${token}/contribuer`, payload);
+
 // --- Invitations (rejoindre un foyer) ---
 export const creerInvitation = () => api.post("/foyer/invitations");
 export const listerInvitations = () => api.get("/foyer/invitations");
