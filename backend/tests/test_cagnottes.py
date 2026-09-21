@@ -1,7 +1,7 @@
 from .conftest import inscrire, entetes_auth
 
 
-def test_creer_cagnotte_et_contribuer_publiquement(client):
+def test_creer_cagnotte_et_voir_publiquement(client):
     data = inscrire(client)
     headers = entetes_auth(data["access_token"])
 
@@ -21,23 +21,37 @@ def test_creer_cagnotte_et_contribuer_publiquement(client):
     assert vue.json()["nom"] == "Voyage au Portugal"
     assert vue.json()["contributions"] == []
 
-    # Un inconnu contribue sans compte
-    res = client.post(
-        f"/cagnottes/publique/{token}/contribuer",
-        json={"nom_contributeur": "Tonton Bernard", "montant": 100, "message": "Bon voyage !"},
-    )
-    assert res.status_code == 200
-    assert res.json()["montant_total"] == 100
-    assert res.json()["contributions"][0]["nom_contributeur"] == "Tonton Bernard"
 
-
-def test_contribution_publique_sans_nom_refusee(client):
+def test_contribuer_publiquement_necessite_un_compte(client):
     data = inscrire(client)
     headers = entetes_auth(data["access_token"])
     token = client.post("/cagnottes/", json={"nom": "Cadeau"}, headers=headers).json()["token_public"]
 
-    res = client.post(f"/cagnottes/publique/{token}/contribuer", json={"nom_contributeur": "", "montant": 20})
-    assert res.status_code == 400
+    # Sans jeton d'authentification -> refusé
+    res = client.post(f"/cagnottes/publique/{token}/contribuer", json={"montant": 20})
+    assert res.status_code == 401
+
+
+def test_contribuer_publiquement_avec_un_compte_dun_autre_foyer(client):
+    createur = inscrire(client, nom="Pierre", email="pierre@test.fr")
+    headers_createur = entetes_auth(createur["access_token"])
+    token = client.post("/cagnottes/", json={"nom": "Cadeau mariage"}, headers=headers_createur).json()[
+        "token_public"
+    ]
+
+    # Un inconnu (compte dans un tout autre foyer) crée son propre compte et contribue
+    invite = inscrire(client, nom="Tonton Bernard", email="bernard@test.fr")
+    headers_invite = entetes_auth(invite["access_token"])
+    assert invite["utilisateur"]["foyer_id"] != createur["utilisateur"]["foyer_id"]
+
+    res = client.post(
+        f"/cagnottes/publique/{token}/contribuer",
+        json={"montant": 100, "message": "Félicitations !"},
+        headers=headers_invite,
+    )
+    assert res.status_code == 200
+    assert res.json()["montant_total"] == 100
+    assert res.json()["contributions"][0]["nom_contributeur"] == "Tonton Bernard"
 
 
 def test_contribuer_depuis_appli_utilise_le_nom_du_compte(client):
@@ -63,7 +77,8 @@ def test_cagnotte_cloturee_refuse_les_contributions(client):
 
     res = client.post(
         f"/cagnottes/publique/{cagnotte['token_public']}/contribuer",
-        json={"nom_contributeur": "Quelqu'un", "montant": 10},
+        json={"montant": 10},
+        headers=headers,
     )
     assert res.status_code == 400
 
@@ -82,7 +97,7 @@ def test_regenerer_lien_invalide_lancien(client):
     assert client.get(f"/cagnottes/publique/{nouveau_token}").status_code == 200
 
 
-def test_cagnotte_isolee_par_foyer(client):
+def test_cagnotte_isolee_par_foyer_cote_gestion(client):
     pierre = inscrire(client, nom="Pierre", email="pierre@test.fr")
     autre = inscrire(client, nom="Quelqu'un", email="autre@test.fr")
 

@@ -161,7 +161,7 @@ def contribuer_depuis_appli(
     return _vers_schema(cagnotte)
 
 
-# ---------- Accès public (sans compte, via le lien partagé) ----------
+# ---------- Accès via le lien partagé : vue publique, contribution avec compte ----------
 
 @router.get("/publique/{token}", response_model=schemas.CagnottePublique)
 @limiter.limit("30/minute")
@@ -173,13 +173,18 @@ def voir_cagnotte_publique(token: str, request: Request, db: Session = Depends(g
 
 
 @router.post("/publique/{token}/contribuer", response_model=schemas.CagnottePublique)
-@limiter.limit("10/minute")
 def contribuer_publiquement(
     token: str,
     payload: schemas.ContributionCagnotteCreate,
-    request: Request,
     db: Session = Depends(get_db),
+    current_user: models.Utilisateur = Depends(get_current_user),
 ):
+    """
+    Contribuer via le lien public nécessite désormais un vrai compte connecté (peu importe
+    son foyer — pas besoin d'être membre du foyer qui a créé la cagnotte). La visualisation
+    (route GET ci-dessus) reste, elle, accessible sans connexion, pour que les gens sachent
+    à quoi ils sont invités avant de créer un compte.
+    """
     cagnotte = db.query(models.Cagnotte).filter(models.Cagnotte.token_public == token).first()
     if not cagnotte:
         raise HTTPException(status_code=404, detail="Cette cagnotte n'existe pas ou plus")
@@ -188,12 +193,8 @@ def contribuer_publiquement(
             status_code=400, detail="Cette cagnotte est clôturée, elle n'accepte plus de contributions"
         )
 
-    nom_contributeur = (payload.nom_contributeur or "").strip()[:100]
-    if not nom_contributeur:
-        raise HTTPException(status_code=400, detail="Merci d'indiquer ton nom")
-
     contribution = models.ContributionCagnotte(
-        nom_contributeur=nom_contributeur,
+        nom_contributeur=current_user.nom,
         montant=payload.montant,
         message=payload.message,
         date=date.today(),

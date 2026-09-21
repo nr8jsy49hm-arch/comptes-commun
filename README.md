@@ -131,9 +131,9 @@ alembic upgrade head
 
 Onglet Cagnottes : crée une cagnotte pour un projet (voyage groupé, cadeau d'anniversaire ou de mariage...), avec un montant cible et une échéance optionnels. **Purement déclaratif**, comme les objectifs d'épargne — aucun paiement réel n'est traité, chacun indique juste ce qu'il a mis.
 
-- **Lien public partageable** (`.../?cagnotte=<jeton>`) : n'importe qui peut voir la progression et contribuer **sans créer de compte**, en donnant simplement son nom. Idéal pour inviter des proches qui n'utilisent pas l'appli.
+- **Lien public partageable** (`.../?cagnotte=<jeton>`) : n'importe qui peut **voir** la progression sans compte. Pour **contribuer**, un compte est nécessaire (création en une minute directement sur la page si besoin) — ça garantit que chaque participation vienne d'une vraie personne identifiée, plutôt qu'un simple nom tapé en texte libre. Le compte créé n'a pas besoin d'appartenir au même foyer que la cagnotte.
 - **Gestion** : copier le lien, le régénérer (invalide l'ancien si jamais il a fuité), verser directement depuis l'appli (le nom est pris automatiquement sur ton compte), clôturer/rouvrir, supprimer.
-- **Sécurité** : les routes publiques sont limitées en débit (anti-spam), et complètement isolées par foyer côté gestion (impossible de gérer la cagnotte d'un autre foyer, même en devinant son ID).
+- **Sécurité** : isolation stricte par foyer côté gestion (impossible de gérer la cagnotte d'un autre foyer, même en devinant son ID) ; la vue publique reste accessible sans connexion, seule la contribution exige un compte.
 
 ## Photo de justificatif
 

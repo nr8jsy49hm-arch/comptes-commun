@@ -333,7 +333,6 @@ class InvitationInfo(BaseModel):
 
 
 class ContributionCagnotteCreate(BaseModel):
-    nom_contributeur: Optional[str] = None  # ignoré pour la contribution authentifiée (nom du compte utilisé)
     montant: float
     message: Optional[str] = None
 

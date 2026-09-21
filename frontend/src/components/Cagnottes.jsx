@@ -28,7 +28,7 @@ function CarteCagnotte({ cagnotte, onMaj, onSupprimer }) {
   const handleVerser = async (e) => {
     e.preventDefault();
     if (!montantVersement) return;
-    await contribuerCagnotte(cagnotte.id, { nom_contributeur: "", montant: parseFloat(montantVersement) });
+    await contribuerCagnotte(cagnotte.id, { montant: parseFloat(montantVersement) });
     setMontantVersement("");
     onMaj();
   };
@@ -150,8 +150,9 @@ export default function Cagnottes() {
     <div className="dashboard cagnottes">
       <h3>Cagnottes pour vos projets</h3>
       <p className="cle-repartition-intro">
-        Voyage groupé, cadeau d'anniversaire, projet commun... partage un lien pour que
-        n'importe qui puisse participer, sans avoir besoin de compte. Purement déclaratif —
+        Voyage groupé, cadeau d'anniversaire, projet commun... partage un lien pour que tes
+        proches participent (ils créent un compte en une minute s'ils n'en ont pas déjà un,
+        histoire que chaque participation vienne d'une vraie personne). Purement déclaratif —
         aucun paiement réel n'est encaissé, chacun indique juste ce qu'il a mis.
       </p>
 

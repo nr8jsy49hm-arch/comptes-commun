@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
 import { PiggyBank } from "lucide-react";
 import { getCagnottePublique, contribuerCagnottePublique, extraireErreur } from "../api";
+import Login from "./Login";
+import Register from "./Register";
+import MotDePasseOublie from "./MotDePasseOublie";
+
+function getUtilisateurStocke() {
+  const raw = localStorage.getItem("utilisateur");
+  return raw ? JSON.parse(raw) : null;
+}
 
 export default function CagnottePublique({ token }) {
   const [cagnotte, setCagnotte] = useState(null);
   const [erreurChargement, setErreurChargement] = useState(false);
-  const [nom, setNom] = useState("");
+  const [utilisateur, setUtilisateur] = useState(getUtilisateurStocke());
+  const [ecranAuth, setEcranAuth] = useState("login");
   const [montant, setMontant] = useState("");
   const [message, setMessage] = useState("");
   const [erreur, setErreur] = useState("");
@@ -28,7 +37,6 @@ export default function CagnottePublique({ token }) {
     setEnvoi(true);
     try {
       const res = await contribuerCagnottePublique(token, {
-        nom_contributeur: nom,
         montant: parseFloat(montant),
         message: message || undefined,
       });
@@ -90,18 +98,14 @@ export default function CagnottePublique({ token }) {
 
         {cagnotte.cloturee ? (
           <p className="auth-erreur">Cette cagnotte est clôturée, elle n'accepte plus de contributions.</p>
-        ) : (
+        ) : utilisateur ? (
           <form onSubmit={handleSubmit}>
             <h3>Participer</h3>
+            <p className="compte-question-actuelle">
+              Tu contribues en tant que <strong>{utilisateur.nom}</strong>.
+            </p>
             {erreur && <p className="auth-erreur">{erreur}</p>}
             {merci && <p className="compte-message-ok">Merci pour ta participation !</p>}
-            <input
-              type="text"
-              placeholder="Ton nom"
-              value={nom}
-              onChange={(e) => setNom(e.target.value)}
-              required
-            />
             <input
               type="number"
               step="0.01"
@@ -120,25 +124,46 @@ export default function CagnottePublique({ token }) {
               {envoi ? "Envoi..." : "Participer"}
             </button>
           </form>
-        )}
-
-        {cagnotte.contributions.length > 0 && (
-          <>
-            <h3 style={{ marginTop: 24 }}>Participants</h3>
-            <ul className="cagnotte-participants">
-              {cagnotte.contributions.map((c) => (
-                <li key={c.id}>
-                  <div className="cagnotte-participant-ligne">
-                    <strong>{c.nom_contributeur}</strong>
-                    <span>{c.montant.toFixed(2)} €</span>
-                  </div>
-                  {c.message && <p className="cagnotte-participant-message">{c.message}</p>}
-                </li>
-              ))}
-            </ul>
-          </>
+        ) : (
+          <div className="cagnotte-connexion-requise">
+            <h3>Participer</h3>
+            <p className="compte-question-actuelle">
+              Pour garantir que chaque participation vienne d'une vraie personne, un compte est
+              nécessaire (ça ne prend qu'une minute).
+            </p>
+            {ecranAuth === "login" && (
+              <Login
+                onConnecte={setUtilisateur}
+                onAllerInscription={() => setEcranAuth("register")}
+                onMotDePasseOublie={() => setEcranAuth("oublie")}
+              />
+            )}
+            {ecranAuth === "register" && (
+              <Register onInscrit={setUtilisateur} onAllerConnexion={() => setEcranAuth("login")} />
+            )}
+            {ecranAuth === "oublie" && (
+              <MotDePasseOublie onRetourConnexion={() => setEcranAuth("login")} />
+            )}
+          </div>
         )}
       </div>
+
+      {cagnotte.contributions.length > 0 && (
+        <div className="auth-form">
+          <h3>Participants</h3>
+          <ul className="cagnotte-participants">
+            {cagnotte.contributions.map((c) => (
+              <li key={c.id}>
+                <div className="cagnotte-participant-ligne">
+                  <strong>{c.nom_contributeur}</strong>
+                  <span>{c.montant.toFixed(2)} €</span>
+                </div>
+                {c.message && <p className="cagnotte-participant-message">{c.message}</p>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <p className="cagnotte-publique-footer">
         Propulsé par <strong>Comptes Communs</strong>
